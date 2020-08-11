@@ -30,6 +30,11 @@ type mysqld  &>/dev/null && echo ">>> WARNING: existing mysqld configuration wil
 
 # get install code
 echo "Getting build code..."
+
+# the following ppa are needed:
+add-apt-repository ppa:ondrej/apache2
+add-apt-repository ppa:ondrej/php
+
 apt-get update
 apt-get install --no-install-recommends -y wget ca-certificates sudo lsb-release
 
