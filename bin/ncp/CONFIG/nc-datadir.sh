@@ -18,7 +18,7 @@ is_active()
 install()
 {
   apt-get update
-  apt-get install -y --no-install-recommends btrfs-tools
+  apt-get install -y --no-install-recommends btrfs-progs 
 }
 
 configure()
