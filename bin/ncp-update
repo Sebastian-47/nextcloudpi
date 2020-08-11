@@ -5,14 +5,15 @@
 {
   [ "$(id -u)" -ne 0 ] && { printf "Must be run as root. Try 'sudo $0'\n"; exit 1; }
 
-  BRANCH="${1:-master}"
-  [[ "$BRANCH" != "master" ]] && echo "INFO: updating to development branch '$BRANCH'"
+  #BRANCH="${1:-master}"
+  #[[ "$BRANCH" != "master" ]] && echo "INFO: updating to development branch '$BRANCH'"
+  BRANCH=ubuntu.20.04
 
   TMPDIR="$( mktemp -d /tmp/ncp-update.XXXXXX || ( echo "Failed to create temp dir. Exiting" >&2; exit 1 ) )"
   trap "cd /; rm -rf \"${TMPDIR}\"; exit 0" 0 1 2 3 15
 
   echo -e "Downloading updates"
-  git clone --depth 20 -b "$BRANCH" -q https://github.com/nextcloud/nextcloudpi.git "$TMPDIR" || {
+  git clone --depth 20 -b "$BRANCH" -q https://github.com/Sebastian-47/nextcloudpi "$TMPDIR" || {
     echo "No internet connectivity"
     exit 1
   }
