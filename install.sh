@@ -14,8 +14,9 @@ BRANCH=master
 
 set -e$DBG
 
-TMPDIR="$(mktemp -d /tmp/nextcloudpi.XXXXXX || (echo "Failed to create temp dir. Exiting" >&2 ; exit 1) )"
-trap "rm -rf \"${TMPDIR}\" ; exit 0" 0 1 2 3 15
+# we donwload the complete git and run install inside of it, therefore we don' need a tmp dir
+#TMPDIR="$(mktemp -d /tmp/nextcloudpi.XXXXXX || (echo "Failed to create temp dir. Exiting" >&2 ; exit 1) )"
+#trap "rm -rf \"${TMPDIR}\" ; exit 0" 0 1 2 3 15
 
 [[ ${EUID} -ne 0 ]] && {
   printf "Must be run as root. Try 'sudo $0'\n"
@@ -32,11 +33,12 @@ echo "Getting build code..."
 apt-get update
 apt-get install --no-install-recommends -y wget ca-certificates sudo lsb-release
 
-pushd "$TMPDIR"
-wget -qO- --content-disposition https://github.com/nextcloud/nextcloudpi/archive/"$BRANCH"/latest.tar.gz \
-  | tar -xz \
-  || exit 1
-cd - && cd "$TMPDIR"/nextcloudpi-"$BRANCH"
+# we donwload the complete git and run install inside of it
+#pushd "$TMPDIR"
+#wget -qO- --content-disposition https://github.com/nextcloud/nextcloudpi/archive/"$BRANCH"/latest.tar.gz \
+#  | tar -xz \
+#  || exit 1
+#cd - && cd "$TMPDIR"/nextcloudpi-"$BRANCH"
 
 # install NCP
 echo -e "\nInstalling NextCloudPi..."
