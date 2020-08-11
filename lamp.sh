@@ -26,6 +26,8 @@ export DEBIAN_FRONTEND=noninteractive
 
 install()
 {
+    #php is not native in the ubuntu repositories
+    add-apt-repository ppa:ondrej/php
     apt-get update
     $APTINSTALL apt-utils cron curl
     $APTINSTALL apache2
