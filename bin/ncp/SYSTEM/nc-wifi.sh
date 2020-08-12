@@ -11,34 +11,33 @@
 
 install()
 {
-  apt-get update
-  #apt install -y --no-install-recommends wicd-curses # debian
-  apt install -y --no-install-recommends wicd # ubuntu
-  systemctl disable wicd 
+  # apt-get update
+  # apt install -y --no-install-recommends wicd-curses # debian
+  # systemctl disable wicd 
 }
 
 configure()
 {
-  [[ $ACTIVE != "yes" ]] && { 
-    systemctl stop     wicd
-    systemctl disable  wicd 
-    systemctl start   dhcpcd
-    systemctl enable  dhcpcd
-    ip link set down dev wlan0
-    systemctl start nextcloud-domain
-    return; 
-  } 
+  # [[ $ACTIVE != "yes" ]] && { 
+  #   systemctl stop     wicd
+  #   systemctl disable  wicd 
+  #   systemctl start   dhcpcd
+  #   systemctl enable  dhcpcd
+  #   ip link set down dev wlan0
+  #   systemctl start nextcloud-domain
+  #   return; 
+  # } 
 
-  ip link set up dev wlan0
-  systemctl stop    dhcpcd
-  systemctl disable dhcpcd
-  systemctl enable  wicd 
-  systemctl start   wicd
+  # ip link set up dev wlan0
+  # systemctl stop    dhcpcd
+  # systemctl disable dhcpcd
+  # systemctl enable  wicd 
+  # systemctl start   wicd
 
-  wicd-curses
-  clear
+  # wicd-curses
+  # clear
 
-  systemctl start nextcloud-domain
+  # systemctl start nextcloud-domain
 }
 
 # License
