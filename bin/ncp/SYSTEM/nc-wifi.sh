@@ -12,7 +12,8 @@
 install()
 {
   apt-get update
-  apt install -y --no-install-recommends wicd-curses
+  #apt install -y --no-install-recommends wicd-curses # debian
+  apt install -y --no-install-recommends wicd # ubuntu
   systemctl disable wicd 
 }
 
