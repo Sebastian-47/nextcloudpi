@@ -14,6 +14,7 @@ install()
   # apt-get update
   # apt install -y --no-install-recommends wicd-curses # debian
   # systemctl disable wicd 
+  echo "the wifi will not be set up"
 }
 
 configure()
@@ -37,7 +38,8 @@ configure()
   # wicd-curses
   # clear
 
-  # systemctl start nextcloud-domain
+  #systemctl start nextcloud-domain
+  echo "the wifi is not set up"
 }
 
 # License
