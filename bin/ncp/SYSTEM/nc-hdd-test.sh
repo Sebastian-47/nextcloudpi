@@ -14,10 +14,10 @@ install()
 {
   apt-get update
   apt-get install --no-install-recommends -y smartmontools
-  [[ "$DOCKERBUILD" == 1 ]] || {
-    systemctl disable smartd
-    systemctl stop smartd
-  }
+  #[[ "$DOCKERBUILD" == 1 ]] || {
+  #  systemctl disable smartd
+  #  systemctl stop smartd
+  #}
   return
 }
 
