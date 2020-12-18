@@ -32,14 +32,17 @@ configure()
   # MAX PHP THREADS
   local CONF=/etc/php/${PHPVER}/fpm/pool.d/www.conf
   local CURRENT_THREADS=$( grep "^pm.max_children" "$CONF" | awk '{ print $3 }' )
-  [[ $PHPTHREADS -eq 0 ]] && PHPTHREADS=$( nproc )
-  [[ $PHPTHREADS -lt 3 ]] && PHPTHREADS=3
+  [[ $PHPTHREADS -eq 0 ]] && PHPTHREADS=$(nproc)
+  [[ $PHPTHREADS -lt 6 ]] && PHPTHREADS=6
   echo "Using $PHPTHREADS PHP threads"
   sed -i "s|^pm =.*|pm = static|"                                "$CONF"
   sed -i "s|^pm.max_children =.*|pm.max_children = $PHPTHREADS|" "$CONF"
 
-  # DATABASE MEMORY
-  AUTOMEM=$(( TOTAL_MEM * 40 / 100 ))
+  # DATABASE MEMORY (25%)
+  AUTOMEM=$(( TOTAL_MEM * 25 / 100 ))
+  # Maximum MySQL Memory Usage = innodb_buffer_pool_size + key_buffer_size + (read_buffer_size + sort_buffer_size) X max_connections
+  # leave 16MiB for key_buffer_size and a bit more
+  AUTOMEM=$(( AUTOMEM - (16 + 32) * 1024 * 1024 ))
   local CONF=/etc/mysql/mariadb.conf.d/91-ncp.cnf
   local CURRENT_DB_MEM=$(grep "^innodb_buffer_pool_size" "$CONF" | awk '{ print $3 }')
   echo "Using $AUTOMEM memory for the database"

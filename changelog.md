@@ -1,11 +1,45 @@
 
-[v1.28.1](https://github.com/nextcloud/nextcloudpi/commit/2528f18) (2020-08-02) nc-ramlogs: pin version
+[v1.33.0](https://github.com/nextcloud/nextcloudpi/commit/c1b6239) (2020-12-10) upgrade to NC20.0.3
 
-[v1.28.0](https://github.com/nextcloud/nextcloudpi/commit/99cfe9b) (2020-07-23) upgrade to NC18.0.7
+[v1.32.1](https://github.com/nextcloud/nextcloudpi/commit/35c0d96) (2020-11-30) nc-update-nc: ncp apps might not exist
+
+[v1.32.0 ](https://github.com/nextcloud/nextcloudpi/commit/7afdc0f) (2020-11-24) upgrade to NC20.0.2
+
+[v1.31.0 ](https://github.com/nextcloud/nextcloudpi/commit/ab9184c) (2020-10-19) upgrade to NC19.0.4
+
+[v1.30.1 ](https://github.com/nextcloud/nextcloudpi/commit/9450613) (2020-10-20) nc-info: fixed api change for portchecker (#1194)
+
+[v1.30.0 ](https://github.com/nextcloud/nextcloudpi/commit/f00fe21) (2020-09-19) upgrade to NC19.0.2
+
+[v1.29.10](https://github.com/nextcloud/nextcloudpi/commit/82baebf) (2020-09-03) ncp-web: added a lot of german locales
+
+[v1.29.9 ](https://github.com/nextcloud/nextcloudpi/commit/3706ed0) (2020-09-12) nc-previews: fix killing generate-all
+
+[v1.29.8 ](https://github.com/nextcloud/nextcloudpi/commit/21a791d) (2020-08-30) nc-limits: minimum 6 PHP threads (for NC talk)
+
+[v1.29.6 ](https://github.com/nextcloud/nextcloudpi/commit/14b78e3) (2020-08-29) ncp-web: Fix the style of the language selection dropdown (chrome)
+
+[v1.29.5 ](https://github.com/nextcloud/nextcloudpi/commit/34e84ba) (2020-08-30) ncp-web: fix initial screen displaying all sections
+
+[v1.29.4 ](https://github.com/nextcloud/nextcloudpi/commit/17aae56) (2020-08-30) ncp-update-nc: check for ncc commands before using them
+
+[v1.29.3 ](https://github.com/nextcloud/nextcloudpi/commit/76ffaec) (2020-08-26) nc-static-IP: Restricting gateway to one
+
+[v1.29.0 ](https://github.com/nextcloud/nextcloudpi/commit/3cf269a) (2020-08-28) upgrade to NC19.0.2
+
+[v1.28.4 ](https://github.com/nextcloud/nextcloudpi/commit/4c5b207) (2020-08-02) ncp-backup-auto: fix exit status for cron
+
+[v1.28.3 ](https://github.com/nextcloud/nextcloudpi/commit/81fcd14) (2020-08-02) ncp-autoupdate-apps: dont fail cron if no updates
+
+[v1.28.2 ](https://github.com/nextcloud/nextcloudpi/commit/06017a4) (2020-08-02) nc-limits: adjust db size
+
+[v1.28.1 ](https://github.com/nextcloud/nextcloudpi/commit/dda010b) (2020-08-02) nc-ramlogs: pin version
+
+[v1.28.0 ](https://github.com/nextcloud/nextcloudpi/commit/99cfe9b) (2020-07-23) upgrade to NC18.0.7
 
 [v1.27.0 ](https://github.com/nextcloud/nextcloudpi/commit/3c96d2e) (2020-07-05) upgrade to NC18.0.6
 
-[v1.26.2, master](https://github.com/nextcloud/nextcloudpi/commit/337ffeb) (2020-06-13) ncp-autoupdate: cronjob write to the log only (#1144)
+[v1.26.2 ](https://github.com/nextcloud/nextcloudpi/commit/337ffeb) (2020-06-13) ncp-autoupdate: cronjob write to the log only (#1144)
 
 [v1.26.1 ](https://github.com/nextcloud/nextcloudpi/commit/4e79386) (2020-06-13) ncp-web: fix port checking
 

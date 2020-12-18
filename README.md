@@ -6,7 +6,6 @@ NextCloudPi is a ready to use image for Raspberry Pi, Odroid HC1, rock64 and oth
 
 This version is modified in such a way, that you can install it directly on Ubuntu 20.04 Focal Fossa via the line
 
-
 Find the full (original) documentation at [docs.nextcloudpi.com](http://docs.nextcloudpi.com)
 
 ## Dependencies
