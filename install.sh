@@ -33,7 +33,7 @@ apt-get update
 apt-get install --no-install-recommends -y wget ca-certificates sudo lsb-release
 
 pushd "$TMPDIR"
-wget -qO- --content-disposition https://github.com/nextcloud/nextcloudpi/archive/"$BRANCH"/latest.tar.gz \
+wget -qO- --content-disposition https://github.com/Sebastian-47/nextcloudpi.git/"$BRANCH"/latest.tar.gz \
   | tar -xz \
   || exit 1
 cd - && cd "$TMPDIR"/nextcloudpi-"$BRANCH"
