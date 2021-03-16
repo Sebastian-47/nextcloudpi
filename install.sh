@@ -32,6 +32,13 @@ echo "Getting build code..."
 apt-get update
 apt-get install --no-install-recommends -y wget ca-certificates sudo lsb-release
 
+# add an repository for php
+apt-get -y install lsb-release apt-transport-https ca-certificates
+wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
+echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/php.list
+apt-get update
+
+
 pushd "$TMPDIR"
 wget -qO- --content-disposition https://github.com/Sebastian-47/nextcloudpi.git/"$BRANCH"/latest.tar.gz \
   | tar -xz \
@@ -54,6 +61,7 @@ mkdir -p /usr/local/etc/ncp-config.d/
 cp etc/ncp-config.d/nc-nextcloud.cfg /usr/local/etc/ncp-config.d/
 cp etc/library.sh /usr/local/etc/
 cp etc/ncp.cfg /usr/local/etc/
+
 
 install_app    lamp.sh
 install_app    bin/ncp/CONFIG/nc-nextcloud.sh
