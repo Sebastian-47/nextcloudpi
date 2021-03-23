@@ -40,7 +40,7 @@ apt-get update
 
 
 pushd "$TMPDIR"
-wget -qO- --content-disposition https://github.com/Sebastian-47/nextcloudpi.git/"$BRANCH"/latest.tar.gz \
+wget -qO- --content-disposition https://github.com/Sebastian-47/nextcloudpi/archive/"$BRANCH"/latest.tar.gz \
   | tar -xz \
   || exit 1
 cd - && cd "$TMPDIR"/nextcloudpi-"$BRANCH"
