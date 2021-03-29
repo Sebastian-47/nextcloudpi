@@ -18,7 +18,7 @@ is_active()
 install()
 {
   apt-get update
-  apt-get install -y --no-install-recommends btrfs-progs 
+  apt-get install -y --no-install-recommends btrfs-progs:arm64
 }
 
 configure()

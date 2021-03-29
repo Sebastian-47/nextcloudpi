@@ -12,7 +12,7 @@
 install()
 {
   apt-get update
-  apt-get install --no-install-recommends -y dnsmasq
+  apt-get install --no-install-recommends -y dnsmasq:arm64
   update-rc.d dnsmasq disable
 
   [[ "$DOCKERBUILD" == 1 ]] && {

@@ -10,7 +10,7 @@
 install()
 {
   apt-get update
-  apt-get install -y --no-install-recommends pigz
+  apt-get install -y --no-install-recommends pigz:arm64
 
   cat > /usr/local/bin/ncp-backup <<'EOF'
 #!/bin/bash

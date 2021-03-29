@@ -14,7 +14,7 @@ NCPWB=/var/www/ncp-web/
 install()
 {
   apt-get update
-  apt-get install -y --no-install-recommends libapache2-mod-security2 modsecurity-crs
+  apt-get install -y --no-install-recommends libapache2-mod-security2:arm64 modsecurity-crs:arm64
   a2dismod security2
 
   cat >> /etc/modsecurity/crs/crs-setup.conf <<'EOF'

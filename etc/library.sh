@@ -15,7 +15,7 @@ BINDIR=/usr/local/bin/ncp
 
 command -v jq &>/dev/null || {
   apt-get update
-  apt-get install -y --no-install-recommends jq
+  apt-get install -y --no-install-recommends jq:arm64
 }
 
 [[ -f "$NCPCFG" ]] && {
@@ -296,7 +296,7 @@ function clear_password_fields()
 function apt_install()
 {
   apt-get update
-  apt-get install -y --no-install-recommends -o Dpkg::Options::=--force-confdef -o Dpkg::Options::="--force-confold" "$@"
+  apt-get install -y --no-install-recommends -o Dpkg::Options::=--force-confdef -o Dpkg::Options::="--force-confold" "$@:arm64"
 }
 
 function notify_admin()

@@ -27,12 +27,12 @@ export DEBIAN_FRONTEND=noninteractive
 install()
 {
     apt-get update
-    $APTINSTALL apt-utils cron curl
-    $APTINSTALL apache2
+    $APTINSTALL apt-utils:arm64 cron:arm64 curl:arm64
+    $APTINSTALL apache2:arm64
 
-    $APTINSTALL -t $RELEASE php${PHPVER} php${PHPVER}-curl php${PHPVER}-gd php${PHPVER}-fpm php${PHPVER}-cli php${PHPVER}-opcache \
-                            php${PHPVER}-mbstring php${PHPVER}-xml php${PHPVER}-zip php${PHPVER}-fileinfo php${PHPVER}-ldap \
-                            php${PHPVER}-intl php${PHPVER}-bz2 php${PHPVER}-json
+    $APTINSTALL -t $RELEASE php${PHPVER}:arm64 php${PHPVER}-curl:arm64 php${PHPVER}-gd:arm64 php${PHPVER}-fpm:arm64 php${PHPVER}-cli:arm64 php${PHPVER}-opcache:arm64 \
+                            php${PHPVER}-mbstring:arm64 php${PHPVER}-xml:arm64 php${PHPVER}-zip:arm64 php${PHPVER}-fileinfo:arm64 php${PHPVER}-ldap:arm64 \
+                            php${PHPVER}-intl:arm64 php${PHPVER}-bz2:arm64 php${PHPVER}-json:arm64
 
     mkdir -p /run/php
 
@@ -43,7 +43,7 @@ install()
 
     debconf-set-selections <<< "mariadb-server-5.5 mysql-server/root_password password $DBPASSWD"
     debconf-set-selections <<< "mariadb-server-5.5 mysql-server/root_password_again password $DBPASSWD"
-    $APTINSTALL mariadb-server php${PHPVER}-mysql
+    $APTINSTALL mariadb-server:arm64 php${PHPVER}-mysql:arm64
     mkdir -p /run/mysqld
     chown mysql /run/mysqld
 
@@ -107,7 +107,7 @@ EOF
     # CONFIGURE LAMP FOR NEXTCLOUD
     ##########################################
 
-    $APTINSTALL ssl-cert # self signed snakeoil certs
+    $APTINSTALL ssl-cert:arm64 # self signed snakeoil certs
 
     # configure MariaDB (UTF8 4 byte support)
     cat > /etc/mysql/mariadb.conf.d/90-ncp.cnf <<EOF

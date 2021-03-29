@@ -12,7 +12,7 @@
 install()
 {
   apt-get update
-  apt-get install -y --no-install-recommends pv openssh-client
+  apt-get install -y --no-install-recommends pv:arm64 openssh-client:arm64
   wget https://raw.githubusercontent.com/nachoparker/btrfs-sync/master/btrfs-sync -O /usr/local/bin/btrfs-sync
   chmod +x /usr/local/bin/btrfs-sync
   if ! [[ -f /root/.ssh/id_rsa ]]; then ssh-keygen -N "" -f /root/.ssh/id_rsa; fi

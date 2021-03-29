@@ -39,7 +39,7 @@ add-apt-repository ppa:ondrej/php  << EOF
 EOF
 
 apt-get update
-apt-get install --no-install-recommends -y wget ca-certificates sudo lsb-release
+apt-get install --no-install-recommends -y wget:arm64 ca-certificates:arm64 sudo:arm64 lsb-release:arm64
 
 pushd "$TMPDIR"
 wget -qO- --content-disposition https://github.com/Sebastian-47/nextcloudpi/archive/"$BRANCH"/latest.tar.gz \

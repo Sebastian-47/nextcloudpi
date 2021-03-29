@@ -12,7 +12,7 @@
 install()
 {
   apt-get update
-  apt-get install -y --no-install-recommends udiskie inotify-tools
+  apt-get install -y --no-install-recommends udiskie:arm64 inotify-tools:arm64
 
   cat > /etc/udev/rules.d/99-udisks2.rules <<'EOF'
 ENV{ID_FS_USAGE}=="filesystem|other|crypto", ENV{UDISKS_FILESYSTEM_SHARED}="1"

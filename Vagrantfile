@@ -26,7 +26,7 @@ Vagrant.configure("2") do |config|
     BRANCH=master
     #BRANCH=devel  # uncomment to install devel
     apt-get update
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends git
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends git:arm64
 
     # indicate that this will be an image build
     touch /.ncp-image
