@@ -12,7 +12,7 @@
 install()
 { 
   apt-get update
-  apt-get install -y --no-install-recommends bsdmainutils
+  apt-get install -y --no-install-recommends bsdmainutils:arm64
 }
 
 configure() 

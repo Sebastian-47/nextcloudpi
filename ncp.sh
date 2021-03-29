@@ -22,7 +22,7 @@ install()
 {
   # NCP-CONFIG
   apt-get update
-  $APTINSTALL git dialog whiptail jq file lsb-release
+  $APTINSTALL git:arm64 dialog:arm64 whiptail:arm64 jq:arm64 file:arm64 lsb-release:arm64
   mkdir -p "$CONFDIR" "$BINDIR"
 
   # include option in raspi-config (only Raspbian)
@@ -120,7 +120,7 @@ Listen 4443
 </Directory>
 EOF
 
-  $APTINSTALL libapache2-mod-authnz-external pwauth
+  $APTINSTALL libapache2-mod-authnz-external:arm64 pwauth:arm64
   a2enmod authnz_external authn_core auth_basic
   a2dissite nextcloud
   a2ensite ncp-activation
@@ -241,7 +241,7 @@ EOF
 
     ## HOSTNAME AND mDNS
     [[ -f /.docker-image ]] || {
-      $APTINSTALL avahi-daemon
+      $APTINSTALL avahi-daemon:arm64
       sed -i '/^127.0.1.1/d'           /etc/hosts
       sed -i "\$a127.0.1.1 nextcloudpi $(hostname)" /etc/hosts
     }

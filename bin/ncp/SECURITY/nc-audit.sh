@@ -13,7 +13,7 @@ install()
 {
   apt-get update
   DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-    lynis debsecan debian-goodies debsums
+    lynis debsecan:arm64 debian-goodies:arm64 debsums:arm64
   cp /etc/lynis/default.prf /etc/lynis/ncp.prf
   cat >> /etc/lynis/ncp.prf <<EOF
 # Won't install apt-listbugs and all its ruby dependencies

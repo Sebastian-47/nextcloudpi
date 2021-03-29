@@ -36,13 +36,13 @@ apt-get upgrade -y
 
 # remove old PHP version
 set +e
-apt-get purge -y php${PHPVER} php${PHPVER}-curl php${PHPVER}-gd php${PHPVER}-fpm php${PHPVER}-cli php${PHPVER}-opcache \
-	php${PHPVER}-mbstring php${PHPVER}-xml php${PHPVER}-zip php${PHPVER}-fileinfo php${PHPVER}-ldap \
-	php${PHPVER}-intl php${PHPVER}-bz2 php${PHPVER}-json
-apt-get purge -y php${PHPVER}-mysql
-apt-get purge -y php${PHPVER}-redis
-apt-get purge -y php${PHPVER}-exif
-apt-get purge -y php${PHPVER}-imagick
+apt-get purge -y php${PHPVER}:arm64 php${PHPVER}-curl:arm64 php${PHPVER}-gd:arm64 php${PHPVER}-fpm:arm64 php${PHPVER}-cli:arm64 php${PHPVER}-opcache:arm64 \
+	php${PHPVER}-mbstring:arm64 php${PHPVER}-xml:arm64 php${PHPVER}-zip:arm64 php${PHPVER}-fileinfo:arm64 php${PHPVER}-ldap:arm64 \
+	php${PHPVER}-intl:arm64 php${PHPVER}-bz2:arm64 php${PHPVER}-json:arm64
+apt-get purge -y php${PHPVER}-mysql:arm64
+apt-get purge -y php${PHPVER}-redis:arm64
+apt-get purge -y php${PHPVER}-exif:arm64
+apt-get purge -y php${PHPVER}-imagick:arm64
 set -e
 
 # update sources
@@ -58,15 +58,17 @@ apt-get dist-upgrade -y
 release_new=$(jq -r '.release'     < "${new_cfg}")
 php_ver_new=$(jq -r '.php_version' < "${new_cfg}")
 
-$APTINSTALL -t ${release_new} php${php_ver_new} php${php_ver_new}-curl php${php_ver_new}-gd php${php_ver_new}-fpm php${php_ver_new}-cli php${php_ver_new}-opcache \
-	php${php_ver_new}-mbstring php${php_ver_new}-xml php${php_ver_new}-zip php${php_ver_new}-fileinfo php${php_ver_new}-ldap \
-	php${php_ver_new}-intl php${php_ver_new}-bz2 php${php_ver_new}-json
+$APTINSTALL -t ${release_new} php${php_ver_new}:arm64 php${php_ver_new}-curl:arm64 php${php_ver_new}-gd:arm64 php${php_ver_new}-fpm:arm64 \ 
+        php${php_ver_new}-cli:arm64 php${php_ver_new}-opcache:arm64 \
+	php${php_ver_new}-mbstring:arm64 php${php_ver_new}-xml:arm64 php${php_ver_new}-zip:arm64 \
+        php${php_ver_new}-fileinfo:arm64 php${php_ver_new}-ldap:arm64 \
+	php${php_ver_new}-intl:arm64 php${php_ver_new}-bz2:arm64 php${php_ver_new}-json:arm64
 
-$APTINSTALL php${php_ver_new}-mysql
-$APTINSTALL -t ${release_new} php${php_ver_new}-redis
+$APTINSTALL php${php_ver_new}-mysql:arm64
+$APTINSTALL -t ${release_new} php${php_ver_new}-redis:arm64
 
-$APTINSTALL -t ${release_new} php-smbclient exfat-fuse exfat-utils
-$APTINSTALL -t ${release_new} php${php_ver_new}-exif
+$APTINSTALL -t ${release_new} php-smbclient exfat-fuse exfat-utils:arm64
+$APTINSTALL -t ${release_new} php${php_ver_new}-exif:arm64
 #$APTINSTALL -t ${release_new} imagemagick php${php_ver_new}-imagick ghostscript
 
 apt-get autoremove -y

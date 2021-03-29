@@ -12,7 +12,7 @@
 install()
 {
   apt-get update
-  apt-get install --no-install-recommends -y nfs-kernel-server 
+  apt-get install --no-install-recommends -y nfs-kernel-server:arm64
   systemctl disable nfs-kernel-server
   systemctl mask nfs-blkmap
 }

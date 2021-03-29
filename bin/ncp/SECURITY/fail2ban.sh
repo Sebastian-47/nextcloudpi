@@ -24,7 +24,7 @@
 install()
 {
   apt-get update
-  apt-get install --no-install-recommends -y fail2ban whois
+  apt-get install --no-install-recommends -y fail2ban:arm64 whois:arm64
   update-rc.d fail2ban disable
   rm -f /etc/fail2ban/jail.d/defaults-debian.conf
 

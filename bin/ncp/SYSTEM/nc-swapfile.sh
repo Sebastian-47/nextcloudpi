@@ -47,7 +47,7 @@ configure()
 
 install()
 {
-  apt_install dphys-swapfile
+  apt_install dphys-swapfile:arm64
 }
 
 

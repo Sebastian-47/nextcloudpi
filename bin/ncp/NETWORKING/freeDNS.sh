@@ -10,7 +10,7 @@
 install()
 {
   apt-get update
-  apt-get install --no-install-recommends -y dnsutils
+  apt-get install --no-install-recommends -y dnsutils:arm64
 }
 
 configure() 

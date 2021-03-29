@@ -21,27 +21,27 @@ install()
 
   # Optional packets for Nextcloud and Apps
   apt-get update
-  $APTINSTALL lbzip2 iputils-ping jq wget
-  $APTINSTALL -t $RELEASE php-smbclient exfat-fuse exfat-utils                  # for external storage
-  $APTINSTALL -t $RELEASE php${PHPVER}-exif                                     # for gallery
-  $APTINSTALL -t $RELEASE php${PHPVER}-gmp                                      # for bookmarks
-  $APTINSTALL -t $RELEASE php-bcmath                                            # for LDAP
-  #$APTINSTALL -t imagemagick php${PHPVER}-imagick ghostscript   # for gallery
+  $APTINSTALL lbzip2:arm64 iputils-ping:arm64 jq:arm64
+  $APTINSTALL -t $RELEASE php-smbclient:arm64 exfat-fuse:arm64 exfat-utils:arm64                  # for external storage
+  $APTINSTALL -t $RELEASE php${PHPVER}-exif:arm64                                     # for gallery
+  $APTINSTALL -t $RELEASE php${PHPVER}-gmp:arm64                                      # for bookmarks
+  $APTINSTALL -t $RELEASE php-bcmath:arm64                                            # for LDAP
+  $APTINSTALL imagemagick:arm64 php${PHPVER}-imagick:arm64 ghostscript:arm64   # for gallery
 
 
   # POSTFIX
-  $APTINSTALL postfix || {
+  $APTINSTALL postfix:arm64 || {
     # [armbian] workaround for bug - https://bugs.launchpad.net/ubuntu/+source/postfix/+bug/1531299
     echo "[NCP] Please, ignore the previous postfix installation error ..."
     mv /usr/bin/newaliases /
     ln -s /bin/true /usr/bin/newaliases
-    $APTINSTALL postfix
+    $APTINSTALL postfix:arm64
     rm /usr/bin/newaliases
     mv /newaliases /usr/bin/newaliases
   }
 
-  $APTINSTALL redis-server
-  $APTINSTALL -t $RELEASE php${PHPVER}-redis
+  $APTINSTALL redis-server:arm64
+  $APTINSTALL -t $RELEASE php${PHPVER}-redis:arm64
 
   local REDIS_CONF=/etc/redis/redis.conf
   local REDISPASS="default"

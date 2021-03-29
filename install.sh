@@ -9,7 +9,7 @@
 #
 # more details at https://ownyourbits.com
 
-BRANCH=nc22.1.1-ubuntu.20.04
+BRANCH=nc22.2.0-ubuntu.20.04-OnlyOffice
 #DBG=x
 
 set -e$DBG
@@ -44,7 +44,7 @@ add-apt-repository ppa:ondrej/pkg-gearman << EOF
 EOF
 
 apt-get update
-apt-get install --no-install-recommends -y git ca-certificates sudo lsb-release
+apt-get install --no-install-recommends -y git:arm64 ca-certificates:arm64 sudo:arm64 lsb-release:arm64
 
 # get install code
 if [[ "${CODE_DIR}" == "" ]]; then

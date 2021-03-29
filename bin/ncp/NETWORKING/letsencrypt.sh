@@ -31,7 +31,7 @@ install()
 {
   cd /etc || return 1
   apt-get update
-  apt-get install --no-install-recommends -y letsencrypt
+  apt-get install --no-install-recommends -y letsencrypt:arm64
   rm -f /etc/cron.d/certbot
   mkdir -p /etc/letsencrypt/live
 

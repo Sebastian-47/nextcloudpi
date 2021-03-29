@@ -12,7 +12,7 @@
 install()
 {
   apt-get update
-  DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends miniupnpc
+  DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends miniupnpc:arm64
 }
 
 configure() 

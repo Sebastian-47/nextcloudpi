@@ -12,7 +12,7 @@
 install()
 {
   apt-get update
-  apt-get install --no-install-recommends -y samba
+  apt-get install --no-install-recommends -y samba:arm64
   update-rc.d smbd disable
   update-rc.d nmbd disable
 

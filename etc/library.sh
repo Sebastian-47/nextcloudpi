@@ -20,7 +20,7 @@ export TRUSTED_DOMAINS=(
 
 command -v jq &>/dev/null || {
   apt-get update
-  apt-get install -y --no-install-recommends jq
+  apt-get install -y --no-install-recommends jq:arm64
 }
 
 [[ -f "$NCPCFG" ]] && {

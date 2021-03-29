@@ -13,7 +13,7 @@ BASEDIR=/var/www
 install()
 {
   apt-get update
-  apt-get install --no-install-recommends -y rsync openssh-client
+  apt-get install --no-install-recommends -y rsync:arm64 openssh-client:arm64
 }
 
 configure()
