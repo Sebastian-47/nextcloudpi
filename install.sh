@@ -9,7 +9,7 @@
 #
 # more details at https://ownyourbits.com
 
-BRANCH=ubuntu.20.04
+BRANCH=ubuntu.20.04-with-OnlyOffice
 #DBG=x
 
 set -e$DBG
