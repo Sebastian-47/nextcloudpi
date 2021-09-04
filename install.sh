@@ -9,13 +9,13 @@
 #
 # more details at https://ownyourbits.com
 
-BRANCH=master
+BRANCH="${BRANCH:-master}"
 #DBG=x
 
 set -e$DBG
 
 TMPDIR="$(mktemp -d /tmp/nextcloudpi.XXXXXX || (echo "Failed to create temp dir. Exiting" >&2 ; exit 1) )"
-trap "rm -rf \"${TMPDIR}\" ; exit 0" 0 1 2 3 15
+trap "rm -rf \"${TMPDIR}\"" 0 1 2 3 15
 
 [[ ${EUID} -ne 0 ]] && {
   printf "Must be run as root. Try 'sudo $0'\n"
@@ -30,14 +30,13 @@ type mysqld  &>/dev/null && echo ">>> WARNING: existing mysqld configuration wil
 # get install code
 echo "Getting build code..."
 apt-get update
-apt-get install --no-install-recommends -y wget ca-certificates sudo lsb-release
+apt-get install --no-install-recommends -y git ca-certificates sudo lsb-release
 
 # add an repository for php
 apt-get -y install lsb-release apt-transport-https ca-certificates
 wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
 echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/php.list
 apt-get update
-
 
 pushd "$TMPDIR"
 wget -qO- --content-disposition https://github.com/Sebastian-47/nextcloudpi/archive/"$BRANCH"/latest.tar.gz \
@@ -56,12 +55,14 @@ check_distro etc/ncp.cfg || {
   exit 1;
 }
 
+# indicate that this will be an image build
+touch /.ncp-image
 
 mkdir -p /usr/local/etc/ncp-config.d/
 cp etc/ncp-config.d/nc-nextcloud.cfg /usr/local/etc/ncp-config.d/
 cp etc/library.sh /usr/local/etc/
 cp etc/ncp.cfg /usr/local/etc/
-
+cp -r etc/ncp-templates /usr/local/etc/
 
 install_app    lamp.sh
 install_app    bin/ncp/CONFIG/nc-nextcloud.sh
@@ -70,8 +71,10 @@ systemctl restart mysqld # TODO this shouldn't be necessary, but somehow it's ne
 install_app    ncp.sh
 run_app_unsafe bin/ncp/CONFIG/nc-init.sh
 bash /usr/local/bin/ncp-provisioning.sh
+rm /.ncp-image
 
-popd
+cd -
+rm -rf "${TMPDIR}"
 
 IFACE="$( ip r | grep "default via" | awk '{ print $5 }' | head -1 )"
 IP="$( ip a show dev "$IFACE" | grep global | grep -oP '\d{1,3}(.\d{1,3}){3}' | head -1 )"
@@ -86,8 +89,6 @@ Note: You will have to add an exception, to bypass your browser warning when you
 first load the activation and :4443 pages. You can run letsencrypt to get rid of
 the warning if you have a (sub)domain available.
 "
-
-exit 0
 
 # License
 #

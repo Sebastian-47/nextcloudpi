@@ -16,7 +16,7 @@ Find the full documentation at [docs.nextcloudpi.com](http://docs.nextcloudpi.co
 ## Features
 
  * Debian/Raspbian 10 Buster
- * Nextcloud 20.0.8
+ * Nextcloud 20.0.12
  * Apache 2.4.25, with HTTP2 enabled
  * PHP 7.3
  * MariaDB 10
@@ -46,6 +46,7 @@ Find the full documentation at [docs.nextcloudpi.com](http://docs.nextcloudpi.co
  * Dynamic DNS support for freeDNS
  * Dynamic DNS support for duckDNS
  * Dynamic DNS support for spDYN
+ * Dynamic DNS support for Namecheap
  * dnsmasq DNS server with DNS cache
  * ModSecurity Web Application Firewall
  * NFS ready to mount your files over LAN

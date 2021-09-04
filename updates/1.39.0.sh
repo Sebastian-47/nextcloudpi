@@ -17,6 +17,11 @@ echo "*/5  *  *  *  * php -f /var/www/nextcloud/cron.php" > "${crontab_tmp}"
 crontab -u www-data "${crontab_tmp}"
 rm "${crontab_tmp}"
 
+## update nc-restore
+install_app nc-restore
+
+## make sure old images clear the ncp-image flag
+rm -f /.ncp-image
 
 # docker images only
 [[ -f /.docker-image ]] && {
@@ -30,5 +35,9 @@ rm "${crontab_tmp}"
 [[ ! -f /.docker-image ]] && {
   :
 }
+
+## enable TLSv1.3
+sed -i 's|SSLProtocol -all.*|SSLProtocol -all +TLSv1.2 +TLSv1.3|' /etc/apache2/conf-available/http2.conf
+bash -c "sleep 2 && service apache2 reload" &>/dev/null &
 
 exit 0
