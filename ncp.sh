@@ -10,7 +10,7 @@
 
 WEBADMIN=ncp
 WEBPASSWD=ownyourbits
-BRANCH=master
+BRANCH="${BRANCH:-master}"
 
 BINDIR=/usr/local/bin/ncp
 CONFDIR=/usr/local/etc/ncp-config.d/
@@ -217,7 +217,7 @@ EOF
   chmod g+w           /var/run/.ncp-latest-version
 
   # Install all ncp-apps
-  bin/ncp-update $BRANCH || exit 1
+  bin/ncp-update $BRANCH || exit $?
 
   # LIMIT LOG SIZE
   grep -q maxsize /etc/logrotate.d/apache2 || sed -i /weekly/amaxsize2M /etc/logrotate.d/apache2
@@ -237,7 +237,7 @@ EOF
   if [[ -f /.ncp-image ]]; then
     rm -rf /var/log/ncp.log
 
-    ## NEXTCLOUDPI MOTD 
+    ## NEXTCLOUDPI MOTD
     rm -rf /etc/update-motd.d
     mkdir /etc/update-motd.d
     rm /etc/motd
@@ -256,9 +256,12 @@ EOF
     chmod a+x /etc/update-motd.d/*
 
     ## HOSTNAME AND mDNS
-    [[ -f /.docker-image ]] || $APTINSTALL avahi-daemon:arm64
+    [[ -f /.docker-image ]] || {
+      $APTINSTALL avahi-daemon:arm64
+      sed -i '/^127.0.1.1/d'           /etc/hosts
+      sed -i '$a127.0.1.1 nextcloudpi' /etc/hosts
+    }
     echo nextcloudpi > /etc/hostname
-    sed -i '$c127.0.1.1 nextcloudpi' /etc/hosts
 
     ## tag image
     [[ -f /.docker-image ]] && local DOCKER_TAG="_docker"
