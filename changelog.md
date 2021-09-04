@@ -1,7 +1,59 @@
 
-[v1.34.7](https://github.com/nextcloud/nextcloudpi/commit/0cce679) (2021-01-19) docker: fix datadir path contents
+[v1.38.6](https://github.com/nextcloud/nextcloudpi/commit/79a5020) (2021-08-25) raspi: allow oldstable origins
 
-[v1.34.6](https://github.com/nextcloud/nextcloudpi/commit/84ccf94) (2021-01-18) docker: fix datadir path
+[v1.38.5](https://github.com/nextcloud/nextcloudpi/commit/e23b252) (2021-08-17) nc-init: drop News for 32-bit :(
+
+[v1.38.4 ](https://github.com/nextcloud/nextcloudpi/commit/bb720be) (2021-08-17) build: make sure we clean /.ncp-image in old builds
+
+[v1.38.3](https://github.com/nextcloud/nextcloudpi/commit/9642cf9) (2021-08-17) unattended-upgrades: update raspbian origins
+
+[v1.38.2 ](https://github.com/nextcloud/nextcloudpi/commit/956eea4) (2021-08-16) nc-restore: try to detect old datadir in dataless restoration
+
+[v1.38.1 ](https://github.com/nextcloud/nextcloudpi/commit/4f29d94) (2021-08-16) nextcloud.conf.sh: Prevent apache config test output to end up in generated template
+
+[v1.38.0 ](https://github.com/nextcloud/nextcloudpi/commit/6e2dca5) (2021-08-09) upgrade to NC20.0.12
+
+[v1.37.9 ](https://github.com/nextcloud/nextcloudpi/commit/b8c1409) (2021-08-09) letsencrypt: ability to disable it and roll back to self-signed certificates
+
+[v1.37.8 ](https://github.com/nextcloud/nextcloudpi/commit/5a05b89) (2021-08-08) nextcloud: remove beta option
+
+[v1.37.7 ](https://github.com/nextcloud/nextcloudpi/commit/1d696f0) (2021-08-07) nc-backup-auto.sh: don't smash ncp.log
+
+[v1.37.6 ](https://github.com/nextcloud/nextcloudpi/commit/b840245) (2021-08-03) metrics.sh: Fix inverted is_active result
+
+[v1.37.5 ](https://github.com/nextcloud/nextcloudpi/commit/fb102d2) (2021-08-03) metrics.sh: Fix USER variable being ignored
+
+[v1.37.4 ](https://github.com/nextcloud/nextcloudpi/commit/e492032) (2021-08-02) nextcloud.conf.sh: Allow any user name for metrics endpoint and fix docker build
+
+[v1.37.3 ](https://github.com/nextcloud/nextcloudpi/commit/b8a990e) (2021-08-02) Add ncp-app for prometheus (system) metrics
+
+[v1.37.2](https://github.com/nextcloud/nextcloudpi/commit/4300e30) (2021-07-31) unattended-upgrades: update raspbian origins
+
+[v1.37.1 ](https://github.com/nextcloud/nextcloudpi/commit/b1ffd70) (2021-07-06) ncp-app: bump to NC21
+
+[v1.37.0 ](https://github.com/nextcloud/nextcloudpi/commit/effdd6c) (2021-07-03) upgrade to NC20.0.11
+
+[v1.36.3 ](https://github.com/nextcloud/nextcloudpi/commit/7b809d1) (2021-05-13) ncp-web: fix port checking for IPv6 dual stack
+
+[v1.36.2 ](https://github.com/nextcloud/nextcloudpi/commit/1a8ac71) (2021-05-11) ncp-web: fix port checking
+
+[v1.36.1 ](https://github.com/nextcloud/nextcloudpi/commit/67aa599) (2021-05-09) lamp: allow only TLSv12 and TLSv13
+
+[v1.36.0 ](https://github.com/nextcloud/nextcloudpi/commit/7aef967) (2020-09-16) Namecheap dynamic DNS client
+
+[v1.35.2 ](https://github.com/nextcloud/nextcloudpi/commit/8d76a6b) (2021-04-29) ncp-web: fix display of big files for 32 bit
+
+[v1.35.1 ](https://github.com/nextcloud/nextcloudpi/commit/0ee3aa9) (2021-04-29) ncp-web: fix backup download for big files in 32-bit
+
+[v1.35.0 ](https://github.com/nextcloud/nextcloudpi/commit/be30663) (2021-02-27) upgrade to NC20.0.8
+
+[v1.34.9 ](https://github.com/nextcloud/nextcloudpi/commit/7d15924) (2021-01-19) nc-autoupdate-ncp: Append to log instead of replace
+
+[v1.34.8 ](https://github.com/nextcloud/nextcloudpi/commit/117b8ea) (2021-01-20) nc-automount: udiskie verbose output
+
+[v1.34.7 ](https://github.com/nextcloud/nextcloudpi/commit/b978184) (2021-01-19) docker: fix datadir path contents
+
+[v1.34.6 ](https://github.com/nextcloud/nextcloudpi/commit/84ccf94) (2021-01-18) docker: fix datadir path
 
 [v1.34.5 ](https://github.com/nextcloud/nextcloudpi/commit/afa39fb) (2021-01-18) ncp-config: shorten descriptions
 
@@ -14,6 +66,8 @@
 [v1.34.1](https://github.com/nextcloud/nextcloudpi/commit/23eecff) (2021-01-01) unattended-upgrades: fix raspbian origin
 
 [v1.34.0 ](https://github.com/nextcloud/nextcloudpi/commit/ec428a2) (2021-01-01) upgrade to NC20.0.4
+
+[v1.33.2 ](https://github.com/nextcloud/nextcloudpi/commit/82d00c8) (2021-01-01) ncp-config: fix empty values
 
 [v1.33.1 ](https://github.com/nextcloud/nextcloudpi/commit/42fd597) (2020-12-12) nc-update-nc: improve error messages
 
@@ -29,11 +83,15 @@
 
 [v1.30.0 ](https://github.com/nextcloud/nextcloudpi/commit/f00fe21) (2020-09-19) upgrade to NC19.0.2
 
-[v1.29.10](https://github.com/nextcloud/nextcloudpi/commit/82baebf) (2020-09-03) ncp-web: added a lot of german locales
+[v1.29.11](https://github.com/nextcloud/nextcloudpi/commit/82baebf) (2020-09-03) ncp-web: added a lot of german locales
 
-[v1.29.9 ](https://github.com/nextcloud/nextcloudpi/commit/3706ed0) (2020-09-12) nc-previews: fix killing generate-all
+[v1.29.10](https://github.com/nextcloud/nextcloudpi/commit/3706ed0) (2020-09-12) nc-previews: fix killing generate-all
+
+[v1.29.9 ](https://github.com/nextcloud/nextcloudpi/commit/9d65011) (2020-09-07) nc-restore: also set tempdirectory
 
 [v1.29.8 ](https://github.com/nextcloud/nextcloudpi/commit/21a791d) (2020-08-30) nc-limits: minimum 6 PHP threads (for NC talk)
+
+[v1.29.7 ](https://github.com/nextcloud/nextcloudpi/commit/c143acc) (2020-07-24) do not hsts preload by default, only serve hsts header over https
 
 [v1.29.6 ](https://github.com/nextcloud/nextcloudpi/commit/14b78e3) (2020-08-29) ncp-web: Fix the style of the language selection dropdown (chrome)
 

@@ -4,7 +4,7 @@ This is a fork of the build code for [NextCloudPi](https://nextcloudpi.com).
 
 NextCloudPi is a ready to use image for Raspberry Pi, Odroid HC1, rock64 and other boards.
 
-This version is modified in such a way, that you can install it directly on Ubuntu 20.04 Focal Fossa via the line
+This version is modified in such a way, that you can install it directly on Ubuntu 20.04 Focal Foss.
 
 Find the full (original) documentation at [docs.nextcloudpi.com](http://docs.nextcloudpi.com)
 
