@@ -11,14 +11,14 @@
 
 is_active()
 {
-  local SRCDIR=$( grep datadir /etc/mysql/mariadb.conf.d/90-ncp.cnf | awk -F "= " '{ print $2 }' )
-  [[ "$SRCDIR" != "/var/lib/mysql" ]]
+  #local SRCDIR=$( grep datadir /etc/mysql/mariadb.conf.d/90-ncp.cnf | awk -F "= " '{ print $2 }' )
+  #[[ "$SRCDIR" != "/var/lib/mysql" ]]
 }
 
 configure()
 {
-  local SRCDIR=$( grep datadir /etc/mysql/mariadb.conf.d/90-ncp.cnf | awk -F "= " '{ print $2 }' )
-  [ -d "$SRCDIR" ] || { echo -e "database directory $SRCDIR not found"; return 1; }
+  #local SRCDIR=$( grep datadir /etc/mysql/mariadb.conf.d/90-ncp.cnf | awk -F "= " '{ print $2 }' )
+  #[ -d "$SRCDIR" ] || { echo -e "database directory $SRCDIR not found"; return 1; }
 
   [ -d "$DBDIR" ] && {
     [[ $( find "$DBDIR" -maxdepth 0 -empty | wc -l ) == 0 ]] && {
@@ -33,7 +33,7 @@ configure()
 
   grep -q -e ext -e btrfs <( stat -fc%T "$BASEDIR" ) || { echo -e "Only ext/btrfs filesystems can hold the data directory"; return 1; }
   
-  sudo -u mysql test -x "$BASEDIR" || { echo -e "ERROR: the user mysql does not have access permissions over $BASEDIR"; return 1; }
+  sudo -u postgres test -x "$BASEDIR" || { echo -e "ERROR: the user mysql does not have access permissions over $BASEDIR"; return 1; }
 
   [[ $( stat -fc%d / ) == $( stat -fc%d "$BASEDIR" ) ]] && \
     echo -e "INFO: moving database to the SD card\nIf you want to use an external mount, make sure it is properly set up"

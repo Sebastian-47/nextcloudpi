@@ -33,14 +33,10 @@ DBPASSWD=$( grep password /root/.my.cnf | sed 's|password=||' )
   echo Provisioning MariaDB password
   echo -e "[client]\npassword=$DBPASSWD" > /root/.my.cnf
   chmod 600 /root/.my.cnf
-  mysql <<EOF
-GRANT USAGE ON *.* TO '$DBADMIN'@'localhost' IDENTIFIED BY '$DBPASSWD';
-DROP USER '$DBADMIN'@'localhost';
-CREATE USER '$DBADMIN'@'localhost' IDENTIFIED BY '$DBPASSWD';
-GRANT ALL PRIVILEGES ON nextcloud.* TO $DBADMIN@localhost;
-FLUSH PRIVILEGES;
-EXIT
-EOF
+  sudo -i -u postgres psql -c "GRANT USAGE ON *.* TO '${DBADMIN}'@'localhost' IDENTIFIED BY '${DBPASSWD}';"
+  sudo -i -u postgres psql -c "DROP USER '${DBADMIN}'@'localhost';"
+  sudo -i -u postgres psql -c "CREATE USER ${DBADMIN} WITH password '${DBPASSWD}';"
+  sudo -i -u postgres psql -c "GRANT ALL privileges ON nextcloud.* onlyoffice TO ${DBADMIN};"
 }
 
 [[ -f "$CFG" ]] && {

@@ -36,16 +36,22 @@ install()
 
     mkdir -p /run/php
 
-    # mariaDB password
+    # PostgreSQL password
     local DBPASSWD="default"
     echo -e "[client]\npassword=$DBPASSWD" > /root/.my.cnf
     chmod 600 /root/.my.cnf
 
-    debconf-set-selections <<< "mariadb-server-5.5 mysql-server/root_password password $DBPASSWD"
-    debconf-set-selections <<< "mariadb-server-5.5 mysql-server/root_password_again password $DBPASSWD"
-    $APTINSTALL mariadb-server php${PHPVER}-mysql
-    mkdir -p /run/mysqld
-    chown mysql /run/mysqld
+    # TODO: Can I savely remove this?
+    #debconf-set-selections <<< "mariadb-server-5.5 mysql-server/root_password password $DBPASSWD"
+    #debconf-set-selections <<< "mariadb-server-5.5 mysql-server/root_password_again password $DBPASSWD"
+
+    echo "deb [arch=amd64] http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" |sudo tee /etc/apt/sources.list.d/pgdg.list
+    wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+    apt update
+    $APTINSTALL postgresql-13 postgresql-client-13 php${PHPVER}-pgsql
+    
+    mkdir -p /run/psqld
+    chown postgres /run/psqld
 
     # CONFIGURE APACHE
     ##########################################
@@ -75,7 +81,7 @@ SSLStaplingReturnResponderErrors off
 SSLStaplingCache        shmcb:/var/run/ocsp(128000)
 EOF
 
-    # CONFIGURE PHP7
+    # CONFIGURE PHP8
     ##########################################
 
     cat > /etc/php/${PHPVER}/mods-available/opcache.ini <<EOF
