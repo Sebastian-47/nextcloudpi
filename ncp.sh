@@ -10,7 +10,7 @@
 
 WEBADMIN=ncp
 WEBPASSWD=ownyourbits
-BRANCH="${BRANCH:-master}"
+BRANCH=ubuntu.20.04-nc22-postgresql
 
 BINDIR=/usr/local/bin/ncp
 CONFDIR=/usr/local/etc/ncp-config.d/
@@ -177,7 +177,7 @@ EOF
 [Unit]
 Description=Register Current IP as Nextcloud trusted domain
 Requires=network.target
-After=mysql.service redis.service
+After=postgresql.service
 
 [Service]
 ExecStart=/bin/bash /usr/local/bin/nextcloud-domain.sh

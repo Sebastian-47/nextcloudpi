@@ -21,7 +21,7 @@ EOF
   cat > /usr/lib/systemd/system/nc-automount.service <<'EOF'
 [Unit]
 Description=Automount USB drives
-Before=mysqld.service dphys-swapfile.service fail2ban.service smbd.service nfs-server.service
+Before=postgresql.service dphys-swapfile.service fail2ban.service smbd.service nfs-server.service
 
 [Service]
 Restart=always
@@ -87,7 +87,7 @@ configure()
   [[ $ACTIVE != "yes" ]] && {
     systemctl disable --now nc-automount
     systemctl disable --now nc-automount-links
-    rm -rf /etc/systemd/system/{mariadb,nfs-server,dphys-swapfile,fail2ban}.service.d
+    rm -rf /etc/systemd/system/{postgres,nfs-server,dphys-swapfile,fail2ban}.service.d
     systemctl daemon-reload
     echo "automount disabled"
     return 0
@@ -96,8 +96,8 @@ configure()
   systemctl enable  --now nc-automount-links
 
   # create delays in some units
-  mkdir -p /etc/systemd/system/mariadb.service.d
-  cat > /etc/systemd/system/mariadb.service.d/ncp-delay-automount.conf <<'EOF'
+  mkdir -p /etc/systemd/system/postgres.service.d
+  cat > /etc/systemd/system/postgres.service.d/ncp-delay-automount.conf <<'EOF'
 [Service]
 ExecStartPre=/bin/sleep 20
 Restart=on-failure

@@ -40,7 +40,7 @@ SWP="$( swapon | tail -1 | awk '{ print $1 }' )"
 echo "swapfile|$SWP"
 
 # Database
-DBDIR=$( grep datadir /etc/mysql/mariadb.conf.d/90-ncp.cnf | awk -F "= " '{ print $2 }' )
+DBDIR=$( grep datadir /etc/postgresql/${POSTGRES_VER}/main/postgresql.conf | awk -F " " '{ print $3 }' )
 test -d "$DBDIR" || DBDIRINFO=" (doesn't exist)"
 echo "dbdir|$DBDIR$DBDIRINFO"
 
@@ -57,7 +57,7 @@ fi
 # Services
 echo "HTTPD service|$( pgrep -c apache2 &>/dev/null && echo up || echo down )"
 echo "PHP service|$( pgrep -c php-fpm &>/dev/null && echo up || echo down )"
-echo "MariaDB service|$( pgrep -c mysqld &>/dev/null && echo up || echo down )"
+echo "Postgresql service|$( pgrep -c postgres &>/dev/null && echo up || echo down )"
 echo "Redis service|$( pgrep -c redis-server &>/dev/null && echo up || echo down )"
 echo "HPB service|$($SUDO php /var/www/nextcloud/occ notify_push:self-test &>/dev/null && echo up || echo down )"
 echo "Postfix service|$( pgrep -fc postfix &>/dev/null && echo up || echo down )"

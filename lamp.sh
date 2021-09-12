@@ -49,11 +49,9 @@ install()
     echo -e "[client]\npassword=$DBPASSWD" > /root/.my.cnf
     chmod 600 /root/.my.cnf
 
-    debconf-set-selections <<< "mariadb-server-5.5 mysql-server/root_password password $DBPASSWD"
-    debconf-set-selections <<< "mariadb-server-5.5 mysql-server/root_password_again password $DBPASSWD"
-    $APTINSTALL mariadb-server php${PHPVER}-mysql
-    mkdir -p /run/mysqld
-    chown mysql /run/mysqld
+    $APTINSTALL postgresql-${POSTGRES_VER} postgresql-contrib php${PHPVER}-pgsql
+    #mkdir -p /run/postgresql
+    #chown postgres /run/postgresql
 
     # CONFIGURE APACHE
     ##########################################
@@ -83,7 +81,7 @@ SSLStaplingReturnResponderErrors off
 SSLStaplingCache        shmcb:/var/run/ocsp(128000)
 EOF
 
-    # CONFIGURE PHP7
+    # CONFIGURE PHP
     ##########################################
 
     cat > /etc/php/${PHPVER}/mods-available/opcache.ini <<EOF
@@ -93,7 +91,7 @@ opcache.enable_cli=1
 opcache.fast_shutdown=1
 opcache.interned_strings_buffer=8
 opcache.max_accelerated_files=10000
-opcache.memory_consumption=128
+opcache.memory_consumption=1024
 opcache.save_comments=1
 opcache.revalidate_freq=1
 opcache.file_cache=/tmp;
@@ -117,60 +115,23 @@ EOF
 
     $APTINSTALL ssl-cert # self signed snakeoil certs
 
-    # configure MariaDB (UTF8 4 byte support)
-    cat > /etc/mysql/mariadb.conf.d/90-ncp.cnf <<EOF
-[mysqld]
-datadir = /var/lib/mysql
-EOF
-    cat > /etc/mysql/mariadb.conf.d/91-ncp.cnf <<EOF
-[mysqld]
-transaction_isolation = READ-COMMITTED
-innodb_large_prefix=true
-innodb_file_per_table=1
-innodb_file_format=barracuda
-
-[server]
-# innodb settings
-skip-name-resolve
-innodb_buffer_pool_size = 256M
-innodb_buffer_pool_instances = 1
-innodb_flush_log_at_trx_commit = 2
-innodb_log_buffer_size = 32M
-innodb_max_dirty_pages_pct = 90
-innodb_log_file_size = 32M
-
-# disable query cache
-query_cache_type = 0
-query_cache_size = 0
-
-# other
-tmp_table_size= 64M
-max_heap_table_size= 64M
-EOF
+    # configure postgresql (UTF8 4 byte support)
+#    cat > /etc/postgresql/${POSTGRES_VER}/main/postgresql.conf <<EOF
+#EOF
 
 
-  # launch mariadb if not already running
-  if ! pgrep -c mysqld &>/dev/null; then
-    mysqld &
+  # launch postgres if not already running
+  if ! pgrep -c postgres &>/dev/null; then
+    systemctl start postgresql.service 
   fi
 
-  # wait for mariadb
+  # wait for postgres
   while :; do
-    [[ -S /run/mysqld/mysqld.sock ]] && break
+    [[ -S /run/postgresql/.s.PGSQL.5432 ]] && break
     sleep 0.5
   done
 
   cd /tmp
-  mysql_secure_installation <<EOF
-$DBPASSWD
-y
-$DBPASSWD
-$DBPASSWD
-y
-y
-y
-y
-EOF
 }
 
 configure() { :; }

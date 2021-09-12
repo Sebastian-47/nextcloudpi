@@ -24,30 +24,28 @@ configure()
 
   echo "Setting up database..."
 
-  # launch mariadb if not already running
-  if ! pgrep -c mysqld &>/dev/null; then
-    mysqld &
+  # launch postgres if not already running
+  if ! pgrep -c postgres &>/dev/null; then
+    systemctl start postgresql.service
   fi
 
-  # wait for mariadb
+  # wait for postgres
   while :; do
-    [[ -S /run/mysqld/mysqld.sock ]] && break
+    [[ -S /var/run/postgresql/.s.PGSQL.5432 ]] && break
     sleep 0.5
   done
   sleep 1
 
   # workaround to emulate DROP USER IF EXISTS ..;)
   local DBPASSWD=$( grep password /root/.my.cnf | sed 's|password=||' )
-  mysql <<EOF
+  sudo -u postgres psql <<EOF
 DROP DATABASE IF EXISTS nextcloud;
-CREATE DATABASE nextcloud
-    CHARACTER SET utf8mb4
-    COLLATE utf8mb4_general_ci;
-GRANT USAGE ON *.* TO '$DBADMIN'@'localhost' IDENTIFIED BY '$DBPASSWD';
-DROP USER '$DBADMIN'@'localhost';
-CREATE USER '$DBADMIN'@'localhost' IDENTIFIED BY '$DBPASSWD';
-GRANT ALL PRIVILEGES ON nextcloud.* TO $DBADMIN@localhost;
-EXIT
+CREATE DATABASE nextcloud TEMPLATE template0 ENCODING 'UNICODE';
+DROP USER IF EXISTS $DBADMIN;
+CREATE USER $DBADMIN WITH password '$DBPASSWD';
+ALTER DATABASE nextcloud OWNER TO $DBADMIN;
+GRANT ALL privileges ON DATABASE nextcloud TO $DBADMIN;
+\q
 EOF
 
   ## INITIALIZE NEXTCLOUD
@@ -70,7 +68,7 @@ EOF
   cd /var/www/nextcloud/
   rm -f config/config.php
   ncc maintenance:install --database \
-    "mysql" --database-name "nextcloud"  --database-user "$DBADMIN" --database-pass \
+    "pgsql" --database-name "nextcloud"  --database-user "$DBADMIN" --database-pass \
     "$DBPASSWD" --admin-user "$ADMINUSER" --admin-pass "$ADMINPASS"
 
   # cron jobs
@@ -90,6 +88,7 @@ EOF
   ),
 );
 EOF
+  echo "done!"
 
   # tmp upload dir
   local UPLOADTMPDIR=/var/www/nextcloud/data/tmp
@@ -100,8 +99,8 @@ EOF
   sed -i "s|^;\?upload_tmp_dir =.*$|upload_tmp_dir = $UPLOADTMPDIR|" /etc/php/${PHPVER}/fpm/php.ini
   sed -i "s|^;\?sys_temp_dir =.*$|sys_temp_dir = $UPLOADTMPDIR|"     /etc/php/${PHPVER}/fpm/php.ini
 
-  # 4 Byte UTF8 support
-  ncc config:system:set mysql.utf8mb4 --type boolean --value="true"
+  # 4 Byte UTF8 support // not needed for postgres
+  #ncc config:system:set [].utf8mb4 --type boolean --value="true"
 
   ncc config:system:set trusted_domains "${TRUSTED_DOMAINS[nextcloudpi-local]}" --value="nextcloudpi.local"
   # trusted_domains 6 used by docker
@@ -125,13 +124,13 @@ EOF
     chown -R www-data:www-data data/appdata_${ID}
   }
 
-  mysql nextcloud <<EOF
-replace into  oc_appconfig values ( 'theming', 'name'          , "NextCloudPi"             );
-replace into  oc_appconfig values ( 'theming', 'slogan'        , "keep your data close"    );
-replace into  oc_appconfig values ( 'theming', 'url'           , "https://ownyourbits.com" );
-replace into  oc_appconfig values ( 'theming', 'logoMime'      , "image/svg+xml"           );
-replace into  oc_appconfig values ( 'theming', 'backgroundMime', "image/png"               );
-EOF
+#  sudo -u postgres psql nextcloud <<EOF
+#replace into  oc_appconfig values ( 'theming', 'name'          , "NextCloudPi"             );
+#replace into  oc_appconfig values ( 'theming', 'slogan'        , "keep your data close"    );
+#replace into  oc_appconfig values ( 'theming', 'url'           , "https://ownyourbits.com" );
+#replace into  oc_appconfig values ( 'theming', 'logoMime'      , "image/svg+xml"           );
+#replace into  oc_appconfig values ( 'theming', 'backgroundMime', "image/png"               );
+#EOF
 
   # NCP app
   cp -r /var/www/ncp-app /var/www/nextcloud/apps/nextcloudpi

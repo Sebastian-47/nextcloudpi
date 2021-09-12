@@ -11,13 +11,13 @@
 
 is_active()
 {
-  local SRCDIR=$( grep datadir /etc/mysql/mariadb.conf.d/90-ncp.cnf | awk -F "= " '{ print $2 }' )
-  [[ "$SRCDIR" != "/var/lib/mysql" ]]
+  local SRCDIR=$( grep datadir /etc/postgresql/${POSTGRES_VER}/main/postgresql.conf | awk -F " " '{ print $3 }' )
+  [[ "$SRCDIR" != "/var/lib/postgresql/${POSTGRES_VER}/main" ]]
 }
 
 configure()
 {
-  local SRCDIR=$( grep datadir /etc/mysql/mariadb.conf.d/90-ncp.cnf | awk -F "= " '{ print $2 }' )
+  local SRCDIR=$( grep datadir /etc/postgresql/${POSTGRES_VER}/main/postgresql.conf | awk -F " " '{ print $3 }' )
   [ -d "$SRCDIR" ] || { echo -e "database directory $SRCDIR not found"; return 1; }
 
   [ -d "$DBDIR" ] && {
@@ -33,7 +33,7 @@ configure()
 
   grep -q -e ext -e btrfs <( stat -fc%T "$BASEDIR" ) || { echo -e "Only ext/btrfs filesystems can hold the data directory"; return 1; }
   
-  sudo -u mysql test -x "$BASEDIR" || { echo -e "ERROR: the user mysql does not have access permissions over $BASEDIR"; return 1; }
+  sudo -u postgres test -x "$BASEDIR" || { echo -e "ERROR: the user postgres does not have access permissions over $BASEDIR"; return 1; }
 
   [[ $( stat -fc%d / ) == $( stat -fc%d "$BASEDIR" ) ]] && \
     echo -e "INFO: moving database to the SD card\nIf you want to use an external mount, make sure it is properly set up"
@@ -42,10 +42,10 @@ configure()
   sudo -u www-data php occ maintenance:mode --on
 
   echo "moving database to $DBDIR..."
-  service mysql stop
+  service postgresql stop
   mv "$SRCDIR" "$DBDIR" && \
-    sed -i "s|^datadir.*|datadir = $DBDIR|" /etc/mysql/mariadb.conf.d/90-ncp.cnf
-  service mysql start 
+    sed -i "s|^data_directory.*|data_directory = $DBDIR|" /etc/postgresql/${POSTGRES_VER}/main/postgresql.conf
+  service postgresql start 
 
   sudo -u www-data php occ maintenance:mode --off
 }

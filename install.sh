@@ -9,7 +9,7 @@
 #
 # more details at https://ownyourbits.com
 
-BRANCH=ubuntu.20.04
+BRANCH=ubuntu.20.04-nc22-postgresql
 #DBG=x
 
 set -e$DBG
@@ -79,7 +79,6 @@ install_app    lamp.sh
 install_app    bin/ncp/CONFIG/nc-nextcloud.sh
 run_app_unsafe bin/ncp/CONFIG/nc-nextcloud.sh
 rm /usr/local/etc/ncp-config.d/nc-nextcloud.cfg    # armbian overlay is ro
-systemctl restart mysqld # TODO this shouldn't be necessary, but somehow it's needed in Debian 9.6. Fixme
 install_app    ncp.sh
 run_app_unsafe bin/ncp/CONFIG/nc-init.sh
 bash /usr/local/bin/ncp-provisioning.sh

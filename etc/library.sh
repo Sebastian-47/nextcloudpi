@@ -24,9 +24,10 @@ command -v jq &>/dev/null || {
 }
 
 [[ -f "$NCPCFG" ]] && {
-  NCLATESTVER=$(jq -r .nextcloud_version < "$NCPCFG")
-  PHPVER=$(     jq -r .php_version       < "$NCPCFG")
-  RELEASE=$(    jq -r .release           < "$NCPCFG")
+  NCVER=$(  jq -r .nextcloud_version      < "$NCPCFG")
+  PHPVER=$( jq -r .php_version            < "$NCPCFG")
+  POSTGRES_VER=$( jq -r .postgres_version < "$NCPCFG")
+  RELEASE=$(jq -r .release                < "$NCPCFG")
 }
 command -v ncc &>/dev/null && NCVER="$(ncc status | grep "version:" | awk '{ print $3 }')"
 
@@ -432,7 +433,7 @@ function notify_admin()
 {
   local header="$1"
   local msg="$2"
-  local admin=$(mysql -u root nextcloud -Nse "select uid from oc_group_user where gid='admin' limit 1;")
+  local admin=$(sudo -u postgres psql nextcloud -Nse "select uid from oc_group_user where gid='admin' limit 1;")
   [[ "${admin}" == "" ]] && { echo "admin user not found" >&2; return 0; }
   ncc notification:generate "${admin}" "${header}" -l "${msg}" || true
 }

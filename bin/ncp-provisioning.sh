@@ -25,28 +25,29 @@ REDISPASS="$( grep "^requirepass" /etc/redis/redis.conf | cut -f2 -d' ' )"
   sed -i "s|'password'.*|'password' => '$REDISPASS',|" "$CFG"
 }
 
-## mariaDB provisioning
+## PostgreSQL provisioning
 
 DBADMIN=ncadmin
 DBPASSWD=$( grep password /root/.my.cnf | sed 's|password=||' )
 
 [[ "$DBPASSWD" == "default" ]] && {
   DBPASSWD=$( openssl rand -base64 32 )
-  echo Provisioning MariaDB password
+  echo Provisioning Postgresql password
   echo -e "[client]\npassword=$DBPASSWD" > /root/.my.cnf
   chmod 600 /root/.my.cnf
-  mysql <<EOF
-GRANT USAGE ON *.* TO '$DBADMIN'@'localhost' IDENTIFIED BY '$DBPASSWD';
-DROP USER '$DBADMIN'@'localhost';
-CREATE USER '$DBADMIN'@'localhost' IDENTIFIED BY '$DBPASSWD';
-GRANT ALL PRIVILEGES ON nextcloud.* TO $DBADMIN@localhost;
-FLUSH PRIVILEGES;
-EXIT
+  sudo -u postgres psql <<EOF
+DROP DATABASE IF EXISTS nextcloud;
+CREATE DATABASE nextcloud TEMPLATE template0 ENCODING 'UNICODE';
+DROP USER IF EXISTS $DBADMIN;
+CREATE USER $DBADMIN WITH password '$DBPASSWD';
+ALTER DATABASE nextcloud OWNER TO $DBADMIN;
+GRANT ALL privileges ON DATABASE nextcloud TO $DBADMIN;
+\q
 EOF
 }
 
 [[ -f "$CFG" ]] && {
-  echo "Updating NextCloud config with MariaDB password"
+  echo "Updating NextCloud config with Postgresql password"
   sed -i "s|'dbpassword' =>.*|'dbpassword' => '$DBPASSWD',|" "$CFG"
 }
 
