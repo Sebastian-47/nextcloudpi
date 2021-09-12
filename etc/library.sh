@@ -18,9 +18,10 @@ command -v jq &>/dev/null || {
 }
 
 [[ -f "$NCPCFG" ]] && {
-  NCVER=$(  jq -r .nextcloud_version < "$NCPCFG")
-  PHPVER=$( jq -r .php_version       < "$NCPCFG")
-  RELEASE=$(jq -r .release           < "$NCPCFG")
+  NCVER=$(  jq -r .nextcloud_version     < "$NCPCFG")
+  PHPVER=$( jq -r .php_version           < "$NCPCFG")
+  POSTGRES_VER=$( jq -r postgres_version < "$NCPCFG")
+  RELEASE=$(jq -r .release               < "$NCPCFG")
 }
 
 function configure_app()
