@@ -40,7 +40,7 @@ echo -e "[client]\npassword=default" > /root/.my.cnf
 chmod 600 /root/.my.cnf
 DBPASSWD=default
 DBADMIN=ncadmin
-mysql <<EOF
+sudo -i -u postgres psql <<EOF
 GRANT USAGE ON *.* TO '$DBADMIN'@'localhost' IDENTIFIED BY '$DBPASSWD';
 DROP USER '$DBADMIN'@'localhost';
 CREATE USER '$DBADMIN'@'localhost' IDENTIFIED BY '$DBPASSWD';

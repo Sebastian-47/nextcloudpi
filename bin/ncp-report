@@ -57,7 +57,7 @@ close_summary
 ##
 
 open_summary "Database logs"
-tail -20 /var/log/mysql/*.log
+tail -20 /var/log/postgresql/*.log
 close_summary
 
 ##

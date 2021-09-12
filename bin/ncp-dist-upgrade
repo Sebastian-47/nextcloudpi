@@ -39,7 +39,7 @@ set +e
 apt-get purge -y php${PHPVER} php${PHPVER}-curl php${PHPVER}-gd php${PHPVER}-fpm php${PHPVER}-cli php${PHPVER}-opcache \
 	php${PHPVER}-mbstring php${PHPVER}-xml php${PHPVER}-zip php${PHPVER}-fileinfo php${PHPVER}-ldap \
 	php${PHPVER}-intl php${PHPVER}-bz2 php${PHPVER}-json
-apt-get purge -y php${PHPVER}-mysql
+apt-get purge -y php${PHPVER}-pgsql
 apt-get purge -y php${PHPVER}-redis
 apt-get purge -y php${PHPVER}-exif
 apt-get purge -y php${PHPVER}-imagick
@@ -62,7 +62,7 @@ $APTINSTALL -t ${release_new} php${php_ver_new} php${php_ver_new}-curl php${php_
 	php${php_ver_new}-mbstring php${php_ver_new}-xml php${php_ver_new}-zip php${php_ver_new}-fileinfo php${php_ver_new}-ldap \
 	php${php_ver_new}-intl php${php_ver_new}-bz2 php${php_ver_new}-json
 
-$APTINSTALL php${php_ver_new}-mysql
+$APTINSTALL php${php_ver_new}-pgsql
 $APTINSTALL -t ${release_new} php${php_ver_new}-redis
 
 $APTINSTALL -t ${release_new} php-smbclient exfat-fuse exfat-utils

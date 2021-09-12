@@ -23,7 +23,7 @@ REDISPASS="$( grep "^requirepass" /etc/redis/redis.conf | cut -f2 -d' ' )"
   sed -i "s|'password'.*|'password' => '$REDISPASS',|" "$CFG"
 }
 
-## mariaDB provisioning
+## PostgreSQL provisioning
 
 DBADMIN=ncadmin
 DBPASSWD=$( grep password /root/.my.cnf | sed 's|password=||' )
@@ -33,12 +33,11 @@ DBPASSWD=$( grep password /root/.my.cnf | sed 's|password=||' )
   echo Provisioning MariaDB password
   echo -e "[client]\npassword=$DBPASSWD" > /root/.my.cnf
   chmod 600 /root/.my.cnf
-  mysql <<EOF
-GRANT USAGE ON *.* TO '$DBADMIN'@'localhost' IDENTIFIED BY '$DBPASSWD';
-DROP USER '$DBADMIN'@'localhost';
-CREATE USER '$DBADMIN'@'localhost' IDENTIFIED BY '$DBPASSWD';
-GRANT ALL PRIVILEGES ON nextcloud.* TO $DBADMIN@localhost;
-FLUSH PRIVILEGES;
+  sudo -i -u postgres psql <<EOF
+GRANT USAGE ON *.* TO '${DBADMIN}'@'localhost' IDENTIFIED BY '${DBPASSWD}';
+DROP USER '${DBADMIN}'@'localhost';
+CREATE USER ${DBADMIN} WITH password '${DBPASSWD}';
+GRANT ALL privileges ON nextcloud.* onlyoffice TO ${DBADMIN};
 EXIT
 EOF
 }

@@ -78,7 +78,7 @@ service redis-server restart
 ## RE-CREATE DATABASE TABLE
 
 echo "restore database..."
-mysql -u root <<EOFMYSQL
+sudo -i -u postgres psql <<EOFMYSQL
 DROP DATABASE IF EXISTS nextcloud;
 CREATE DATABASE nextcloud;
 GRANT USAGE ON *.* TO '$DBADMIN'@'localhost' IDENTIFIED BY '$DBPASSWD';
@@ -89,7 +89,7 @@ EXIT
 EOFMYSQL
 [ $? -ne 0 ] && { echo "Error configuring nextcloud database"; exit 1; }
 
-mysql -u root nextcloud <  "$TMPDIR"/nextcloud-sqlbkp_*.bak || { echo "Error restoring nextcloud database"; exit 1; }
+sudo -i -u postgres psql nextcloud <  "$TMPDIR"/nextcloud-sqlbkp_*.bak || { echo "Error restoring nextcloud database"; exit 1; }
 
 ## RESTORE DATADIR
 

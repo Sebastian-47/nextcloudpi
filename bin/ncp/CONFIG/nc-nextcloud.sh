@@ -69,7 +69,7 @@ install()
 [Unit]
 Description=Randomize passwords on first boot
 Requires=network.target
-After=mysql.service redis.service
+After=postgresql.service redis.service
 
 [Service]
 ExecStart=/bin/bash /usr/local/bin/ncp-provisioning.sh
@@ -140,17 +140,17 @@ configure()
   chown -R www-data:www-data $OPCACHEDIR
 
   ## RE-CREATE DATABASE TABLE
-  # launch mariadb if not already running (for docker build)
-  if ! pgrep -c mysqld &>/dev/null; then
-    echo "Starting mariaDB"
-    mysqld &
+  # launch postgres if not already running (for docker build)
+  if ! pgrep -c postgres &>/dev/null; then
+    echo "Starting postgres"
+    systemctl start postgresql.service
   fi
 
-  # wait for mariadb
-  pgrep -x mysqld &>/dev/null || echo "mariaDB process not found"
+  # wait for postgres
+  pgrep -x postgres &>/dev/null || echo "postgres process not found"
 
   while :; do
-    [[ -S /var/run/mysqld/mysqld.sock ]] && break
+    [[ -S /var/run/postgresql/.s.PGSQL.5432 ]] && break
     sleep 0.5
   done
 
@@ -158,11 +158,11 @@ configure()
 
   # workaround to emulate DROP USER IF EXISTS ..;)
   local DBPASSWD=$( grep password /root/.my.cnf | sed 's|password=||' )
-  mysql <<EOF
+  sudo -i -u postgres psql <<EOF
 DROP DATABASE IF EXISTS nextcloud;
 CREATE DATABASE nextcloud
-    CHARACTER SET utf8mb4
-    COLLATE utf8mb4_general_ci;
+    ENCODING utf8mb4
+    LC_COLLATE utf8mb4_general_ci;
 GRANT USAGE ON *.* TO '$DBADMIN'@'localhost' IDENTIFIED BY '$DBPASSWD';
 DROP USER '$DBADMIN'@'localhost';
 CREATE USER '$DBADMIN'@'localhost' IDENTIFIED BY '$DBPASSWD';

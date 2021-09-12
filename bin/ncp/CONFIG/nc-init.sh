@@ -24,25 +24,25 @@ configure()
 
   echo "Setting up database..."
 
-  # launch mariadb if not already running
-  if ! pgrep -c mysqld &>/dev/null; then
-    mysqld &
+  # launch postgres if not already running
+  if ! pgrep -c postgres &>/dev/null; then
+    systemctl start postgresql.service
   fi
 
-  # wait for mariadb
+  # wait for postgres
   while :; do
-    [[ -S /run/mysqld/mysqld.sock ]] && break
+    [[ -S /var/run/postgresql/.s.PGSQL.5432 ]] && break
     sleep 0.5
   done
   sleep 1
 
   # workaround to emulate DROP USER IF EXISTS ..;)
   local DBPASSWD=$( grep password /root/.my.cnf | sed 's|password=||' )
-  mysql <<EOF
+  sudo -i -u postgres psql <<EOF
 DROP DATABASE IF EXISTS nextcloud;
 CREATE DATABASE nextcloud
-    CHARACTER SET utf8mb4
-    COLLATE utf8mb4_general_ci;
+    ENCODING utf8mb4
+    LC_COLLATE utf8mb4_general_ci;
 GRANT USAGE ON *.* TO '$DBADMIN'@'localhost' IDENTIFIED BY '$DBPASSWD';
 DROP USER '$DBADMIN'@'localhost';
 CREATE USER '$DBADMIN'@'localhost' IDENTIFIED BY '$DBPASSWD';
@@ -70,7 +70,7 @@ EOF
   cd /var/www/nextcloud/
   rm -f config/config.php
   ncc maintenance:install --database \
-    "mysql" --database-name "nextcloud"  --database-user "$DBADMIN" --database-pass \
+    "pgsql" --database-name "nextcloud"  --database-user "$DBADMIN" --database-pass \
     "$DBPASSWD" --admin-user "$ADMINUSER" --admin-pass "$ADMINPASS"
 
   # cron jobs
@@ -100,8 +100,8 @@ EOF
   sed -i "s|^;\?upload_tmp_dir =.*$|upload_tmp_dir = $UPLOADTMPDIR|" /etc/php/${PHPVER}/fpm/php.ini
   sed -i "s|^;\?sys_temp_dir =.*$|sys_temp_dir = $UPLOADTMPDIR|"     /etc/php/${PHPVER}/fpm/php.ini
 
-  # 4 Byte UTF8 support
-  ncc config:system:set mysql.utf8mb4 --type boolean --value="true"
+  # 4 Byte UTF8 support // not needed for postgres
+  #ncc config:system:set [].utf8mb4 --type boolean --value="true"
 
   # Default trusted domain ( only from ncp-config )
   test -f /usr/local/bin/nextcloud-domain.sh && {
@@ -129,7 +129,7 @@ EOF
     chown -R www-data:www-data data/appdata_${ID}
   }
 
-  mysql nextcloud <<EOF
+  sudo -i -u postgres psql nextcloud <<EOF
 replace into  oc_appconfig values ( 'theming', 'name'          , "NextCloudPi"             );
 replace into  oc_appconfig values ( 'theming', 'slogan'        , "keep your data close"    );
 replace into  oc_appconfig values ( 'theming', 'url'           , "https://ownyourbits.com" );
