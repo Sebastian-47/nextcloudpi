@@ -9,7 +9,7 @@
 #
 # more details at https://ownyourbits.com
 
-BRANCH=ubuntu.20.04
+BRANCH=ubuntu.20.04-nc22-postgresql
 #DBG=x
 
 set -e$DBG
