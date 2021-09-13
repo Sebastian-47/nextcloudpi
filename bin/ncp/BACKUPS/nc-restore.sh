@@ -86,7 +86,7 @@ CREATE DATABASE nextcloud
 DROP USER IF EXISTS $DBADMIN;
 CREATE USER $DBADMIN WITH password '$DBPASSWD';
 GRANT ALL privileges ON DATABASE nextcloud TO $DBADMIN;
-exit
+exit;
 EOFMYSQL
 [ $? -ne 0 ] && { echo "Error configuring nextcloud database"; exit 1; }
 
