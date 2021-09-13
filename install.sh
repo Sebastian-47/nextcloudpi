@@ -38,6 +38,11 @@ add-apt-repository ppa:ondrej/php  << EOF
 
 EOF
 
+# Since I'm german: 
+add-apt-repository ppa:ondrej/pkg-gearman << EOF
+
+EOF
+
 apt-get update
 apt-get install --no-install-recommends -y git ca-certificates sudo lsb-release
 
