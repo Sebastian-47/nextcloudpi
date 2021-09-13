@@ -34,11 +34,14 @@ DBPASSWD=$( grep password /root/.my.cnf | sed 's|password=||' )
   echo -e "[client]\npassword=$DBPASSWD" > /root/.my.cnf
   chmod 600 /root/.my.cnf
   sudo -i -u postgres psql <<EOF
-GRANT USAGE ON *.* TO '${DBADMIN}'@'localhost' IDENTIFIED BY '${DBPASSWD}';
-DROP USER '${DBADMIN}'@'localhost';
-CREATE USER ${DBADMIN} WITH password '${DBPASSWD}';
-GRANT ALL privileges ON nextcloud.* onlyoffice TO ${DBADMIN};
-EXIT
+DROP DATABASE IF EXISTS nextcloud;
+CREATE DATABASE nextcloud
+    ENCODING utf8
+    LC_COLLATE 'en_US.UTF-8';
+DROP USER IF EXISTS $DBADMIN;
+CREATE USER $DBADMIN WITH password '$DBPASSWD';
+GRANT ALL privileges ON DATABASE nextcloud TO $DBADMIN;
+exit
 EOF
 }
 

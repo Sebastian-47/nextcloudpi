@@ -21,7 +21,7 @@ EOF
   cat > /usr/lib/systemd/system/nc-automount.service <<'EOF'
 [Unit]
 Description=Automount USB drives
-Before=mysqld.service dphys-swapfile.service fail2ban.service smbd.service nfs-server.service
+Before=postgresql.service dphys-swapfile.service fail2ban.service smbd.service nfs-server.service
 
 [Service]
 Restart=always

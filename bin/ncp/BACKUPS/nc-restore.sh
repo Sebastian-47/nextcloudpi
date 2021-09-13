@@ -80,12 +80,13 @@ service redis-server restart
 echo "restore database..."
 sudo -i -u postgres psql <<EOFMYSQL
 DROP DATABASE IF EXISTS nextcloud;
-CREATE DATABASE nextcloud;
-GRANT USAGE ON *.* TO '$DBADMIN'@'localhost' IDENTIFIED BY '$DBPASSWD';
-DROP USER '$DBADMIN'@'localhost';
-CREATE USER '$DBADMIN'@'localhost' IDENTIFIED BY '$DBPASSWD';
-GRANT ALL PRIVILEGES ON nextcloud.* TO $DBADMIN@localhost;
-EXIT
+CREATE DATABASE nextcloud
+    ENCODING utf8
+    LC_COLLATE 'en_US.UTF-8';
+DROP USER IF EXISTS $DBADMIN;
+CREATE USER $DBADMIN WITH password '$DBPASSWD';
+GRANT ALL privileges ON DATABASE nextcloud TO $DBADMIN;
+exit
 EOFMYSQL
 [ $? -ne 0 ] && { echo "Error configuring nextcloud database"; exit 1; }
 

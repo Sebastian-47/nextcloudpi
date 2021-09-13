@@ -41,12 +41,14 @@ chmod 600 /root/.my.cnf
 DBPASSWD=default
 DBADMIN=ncadmin
 sudo -i -u postgres psql <<EOF
-GRANT USAGE ON *.* TO '$DBADMIN'@'localhost' IDENTIFIED BY '$DBPASSWD';
-DROP USER '$DBADMIN'@'localhost';
-CREATE USER '$DBADMIN'@'localhost' IDENTIFIED BY '$DBPASSWD';
-GRANT ALL PRIVILEGES ON nextcloud.* TO $DBADMIN@localhost;
-FLUSH PRIVILEGES;
-EXIT
+DROP DATABASE IF EXISTS nextcloud;
+CREATE DATABASE nextcloud
+    ENCODING utf8
+    LC_COLLATE 'en_US.UTF-8';
+DROP USER IF EXISTS $DBADMIN;
+CREATE USER $DBADMIN WITH password '$DBPASSWD';
+GRANT ALL privileges ON DATABASE nextcloud TO $DBADMIN;
+exit
 EOF
 
 # Trusted Domain ( local IP )

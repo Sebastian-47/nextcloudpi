@@ -41,13 +41,12 @@ configure()
   sudo -i -u postgres psql <<EOF
 DROP DATABASE IF EXISTS nextcloud;
 CREATE DATABASE nextcloud
-    ENCODING utf8mb4
-    LC_COLLATE utf8mb4_general_ci;
-GRANT USAGE ON *.* TO '$DBADMIN'@'localhost' IDENTIFIED BY '$DBPASSWD';
-DROP USER '$DBADMIN'@'localhost';
-CREATE USER '$DBADMIN'@'localhost' IDENTIFIED BY '$DBPASSWD';
-GRANT ALL PRIVILEGES ON nextcloud.* TO $DBADMIN@localhost;
-EXIT
+    ENCODING utf8
+    LC_COLLATE 'en_US.UTF-8';
+DROP USER IF EXISTS $DBADMIN;
+CREATE USER $DBADMIN WITH password '$DBPASSWD';
+GRANT ALL privileges ON DATABASE nextcloud TO $DBADMIN;
+exit
 EOF
 
   ## INITIALIZE NEXTCLOUD
@@ -129,13 +128,13 @@ EOF
     chown -R www-data:www-data data/appdata_${ID}
   }
 
-  sudo -i -u postgres psql nextcloud <<EOF
-replace into  oc_appconfig values ( 'theming', 'name'          , "NextCloudPi"             );
-replace into  oc_appconfig values ( 'theming', 'slogan'        , "keep your data close"    );
-replace into  oc_appconfig values ( 'theming', 'url'           , "https://ownyourbits.com" );
-replace into  oc_appconfig values ( 'theming', 'logoMime'      , "image/svg+xml"           );
-replace into  oc_appconfig values ( 'theming', 'backgroundMime', "image/png"               );
-EOF
+#  sudo -i -u postgres psql nextcloud <<EOF
+#replace into  oc_appconfig values ( 'theming', 'name'          , "NextCloudPi"             );
+#replace into  oc_appconfig values ( 'theming', 'slogan'        , "keep your data close"    );
+#replace into  oc_appconfig values ( 'theming', 'url'           , "https://ownyourbits.com" );
+#replace into  oc_appconfig values ( 'theming', 'logoMime'      , "image/svg+xml"           );
+#replace into  oc_appconfig values ( 'theming', 'backgroundMime', "image/png"               );
+#EOF
 
   # NCP app
   cp -r /var/www/ncp-app /var/www/nextcloud/apps/nextcloudpi

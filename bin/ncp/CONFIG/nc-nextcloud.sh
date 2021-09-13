@@ -156,18 +156,16 @@ configure()
 
   echo "Setting up database..."
 
-  # workaround to emulate DROP USER IF EXISTS ..;)
   local DBPASSWD=$( grep password /root/.my.cnf | sed 's|password=||' )
   sudo -i -u postgres psql <<EOF
 DROP DATABASE IF EXISTS nextcloud;
 CREATE DATABASE nextcloud
-    ENCODING utf8mb4
-    LC_COLLATE utf8mb4_general_ci;
-GRANT USAGE ON *.* TO '$DBADMIN'@'localhost' IDENTIFIED BY '$DBPASSWD';
-DROP USER '$DBADMIN'@'localhost';
-CREATE USER '$DBADMIN'@'localhost' IDENTIFIED BY '$DBPASSWD';
-GRANT ALL PRIVILEGES ON nextcloud.* TO $DBADMIN@localhost;
-EXIT
+    ENCODING utf8
+    LC_COLLATE 'en_US.UTF-8';
+DROP USER IF EXISTS $DBADMIN;
+CREATE USER $DBADMIN WITH password '$DBPASSWD';
+GRANT ALL privileges ON DATABASE nextcloud TO $DBADMIN;
+exit
 EOF
 
 ## SET APACHE VHOST
