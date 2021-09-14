@@ -25,31 +25,31 @@ REDISPASS="$( grep "^requirepass" /etc/redis/redis.conf | cut -f2 -d' ' )"
 
 ## PostgreSQL provisioning
 
-# This seems to break the installation, for debugging, lets skip this part.
-#DBADMIN=ncadmin
-#DBPASSWD=$( grep password /root/.my.cnf | sed 's|password=||' )
-#
-#[[ "$DBPASSWD" == "default" ]] && {
-#  DBPASSWD=$( openssl rand -base64 32 )
-#  echo Provisioning Postgresql password
-#  echo -e "[client]\npassword=$DBPASSWD" > /root/.my.cnf
-#  chmod 600 /root/.my.cnf
-#  sudo -i -u postgres psql <<EOF
-#DROP DATABASE IF EXISTS nextcloud;
-#CREATE DATABASE nextcloud
-#    ENCODING utf8
-#    LC_COLLATE 'en_US.UTF-8';
-#DROP USER IF EXISTS $DBADMIN;
-#CREATE USER $DBADMIN WITH password '$DBPASSWD';
-#GRANT ALL privileges ON DATABASE nextcloud TO $DBADMIN;
-#\q
-#EOF
-#}
-#
-#[[ -f "$CFG" ]] && {
-#  echo "Updating NextCloud config with Postgresql password"
-#  sed -i "s|'dbpassword' =>.*|'dbpassword' => '$DBPASSWD',|" "$CFG"
-#}
+DBADMIN=ncadmin
+DBPASSWD=$( grep password /root/.my.cnf | sed 's|password=||' )
+
+[[ "$DBPASSWD" == "default" ]] && {
+  DBPASSWD=$( openssl rand -base64 32 )
+  echo Provisioning Postgresql password
+  echo -e "[client]\npassword=$DBPASSWD" > /root/.my.cnf
+  chmod 600 /root/.my.cnf
+  sudo -i -u postgres psql <<EOF
+DROP DATABASE IF EXISTS nextcloud;
+CREATE DATABASE nextcloud
+    ENCODING utf8
+    LC_COLLATE 'en_US.UTF-8';
+DROP USER IF EXISTS $DBADMIN;
+CREATE USER $DBADMIN WITH password '$DBPASSWD';
+ALTER DATABASE nextcloud OWNER TO $DBADMIN;
+GRANT ALL privileges ON DATABASE nextcloud TO $DBADMIN;
+\q
+EOF
+}
+
+[[ -f "$CFG" ]] && {
+  echo "Updating NextCloud config with Postgresql password"
+  sed -i "s|'dbpassword' =>.*|'dbpassword' => '$DBPASSWD',|" "$CFG"
+}
 
 ## nc.limits.sh (auto)adjustments: number of threads, memory limits...
 
