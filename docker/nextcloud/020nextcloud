@@ -40,7 +40,7 @@ echo -e "[client]\npassword=default" > /root/.my.cnf
 chmod 600 /root/.my.cnf
 DBPASSWD=default
 DBADMIN=ncadmin
-sudo -i -u postgres psql <<EOF
+sudo -u postgres psql <<EOF
 DROP DATABASE IF EXISTS nextcloud;
 CREATE DATABASE nextcloud TEMPLATE template0 ENCODING 'UNICODE';
 DROP USER IF EXISTS $DBADMIN;

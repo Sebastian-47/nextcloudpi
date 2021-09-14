@@ -24,7 +24,7 @@ configure()
     }
 
     rm -r "$datadir"/appdata_*/preview/* &>/dev/null
-    sudo -i -u postgres psql nextcloud <<<"delete from oc_filecache where path like \"appdata_%/preview/%\""
+    sudo -u postgres psql nextcloud <<<"delete from oc_filecache where path like \"appdata_%/preview/%\""
     ncc files:scan-app-data -n
   }
 

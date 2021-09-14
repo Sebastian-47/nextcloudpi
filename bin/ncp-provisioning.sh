@@ -33,7 +33,7 @@ DBPASSWD=$( grep password /root/.my.cnf | sed 's|password=||' )
   echo Provisioning Postgresql password
   echo -e "[client]\npassword=$DBPASSWD" > /root/.my.cnf
   chmod 600 /root/.my.cnf
-  sudo -i -u postgres psql <<EOF
+  sudo -u postgres psql <<EOF
 DROP DATABASE IF EXISTS nextcloud;
 CREATE DATABASE nextcloud TEMPLATE template0 ENCODING 'UNICODE';
 DROP USER IF EXISTS $DBADMIN;

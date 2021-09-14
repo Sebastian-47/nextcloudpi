@@ -157,7 +157,7 @@ configure()
   echo "Setting up database..."
 
   local DBPASSWD=$( grep password /root/.my.cnf | sed 's|password=||' )
-  sudo -i -u postgres psql <<EOF
+  sudo -u postgres psql <<EOF
 DROP DATABASE IF EXISTS nextcloud;
 CREATE DATABASE nextcloud TEMPLATE template0 ENCODING 'UNICODE';
 DROP USER IF EXISTS $DBADMIN;

@@ -38,7 +38,7 @@ configure()
 
   # workaround to emulate DROP USER IF EXISTS ..;)
   local DBPASSWD=$( grep password /root/.my.cnf | sed 's|password=||' )
-  sudo -i -u postgres psql <<EOF
+  sudo -u postgres psql <<EOF
 DROP DATABASE IF EXISTS nextcloud;
 CREATE DATABASE nextcloud TEMPLATE template0 ENCODING 'UNICODE';
 DROP USER IF EXISTS $DBADMIN;
@@ -128,7 +128,7 @@ EOF
     chown -R www-data:www-data data/appdata_${ID}
   }
 
-#  sudo -i -u postgres psql nextcloud <<EOF
+#  sudo -u postgres psql nextcloud <<EOF
 #replace into  oc_appconfig values ( 'theming', 'name'          , "NextCloudPi"             );
 #replace into  oc_appconfig values ( 'theming', 'slogan'        , "keep your data close"    );
 #replace into  oc_appconfig values ( 'theming', 'url'           , "https://ownyourbits.com" );
