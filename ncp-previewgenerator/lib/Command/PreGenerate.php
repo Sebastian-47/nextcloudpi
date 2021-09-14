@@ -34,7 +34,6 @@ use OCP\IPreview;
 use OCP\IUserManager;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class PreGenerate extends Command {
@@ -116,6 +115,13 @@ class PreGenerate extends Command {
 			return 1;
 		}
 
+		if ($this->checkAlreadyRunning()) {
+			$output->writeln('Command is already running.');
+			return 2;
+		}
+
+		$this->setPID();
+
 		// Set timestamp output
 		$formatter = new TimestampFormatter($this->config, $output->getFormatter());
 		$output->setFormatter($formatter);
@@ -124,36 +130,37 @@ class PreGenerate extends Command {
 		$this->sizes = SizeHelper::calculateSizes($this->config);
 		$this->startProcessing();
 
+		$this->clearPID();
+
 		return 0;
 	}
 
 	private function startProcessing() {
-		// random sleep between 0 and 50ms to avoid collision between 2 processes
-		usleep(rand(0,50000));
-
-		while(true) {
+		while (true) {
 			$qb = $this->connection->getQueryBuilder();
-			$row = $qb->select('*')
+			$qb->select('*')
 				->from('preview_generation')
-				->where($qb->expr()->eq('locked', $qb->createNamedParameter(false)))
-				->setMaxResults(1)
-				->execute()
-				->fetch();
+				->orderBy('id')
+				->setMaxResults(1000);
+			$cursor = $qb->execute();
+			$rows = $cursor->fetchAll();
+			$cursor->closeCursor();
 
-			if ($row === false) {
+			if ($rows === []) {
 				break;
 			}
 
-			$qb->update('preview_generation')
-			   ->where($qb->expr()->eq('id', $qb->createNamedParameter($row['id'])))
-			   ->set('locked', $qb->createNamedParameter(true))
-			   ->execute();
-                        try {
-				$this->processRow($row);
-			} finally {
+			foreach ($rows as $row) {
+				/*
+				 * First delete the row so that if preview generation fails for some reason
+				 * the next run can just continue
+				 */
+				$qb = $this->connection->getQueryBuilder();
 				$qb->delete('preview_generation')
-			            ->where($qb->expr()->eq('id', $qb->createNamedParameter($row['id'])))
-				    ->execute();
+					->where($qb->expr()->eq('id', $qb->createNamedParameter($row['id'])));
+				$qb->execute();
+
+				$this->processRow($row);
 			}
 		}
 	}
@@ -165,6 +172,9 @@ class PreGenerate extends Command {
 		if ($user === null) {
 			return;
 		}
+
+		\OC_Util::tearDownFS();
+		\OC_Util::setupFS($row['uid']);
 
 		try {
 			$userFolder = $this->rootFolder->getUserFolder($user->getUID());
@@ -193,24 +203,20 @@ class PreGenerate extends Command {
 			}
 
 			try {
-				foreach ($this->sizes['square'] as $size) {
-					$this->previewGenerator->getPreview($file, $size, $size, true);
-				}
-
-				// Height previews
-				foreach ($this->sizes['height'] as $height) {
-					$this->previewGenerator->getPreview($file, -1, $height, false);
-				}
-
-				// Width previews
-				foreach ($this->sizes['width'] as $width) {
-					$this->previewGenerator->getPreview($file, $width, -1, false);
-				}
+				$specifications = array_merge(
+					array_map(function ($squareSize) {
+						return ['width' => $squareSize, 'height' => $squareSize, 'crop' => true];
+					}, $this->sizes['square']),
+					array_map(function ($heightSize) {
+						return ['width' => -1, 'height' => $heightSize, 'crop' => false];
+					}, $this->sizes['height']),
+					array_map(function ($widthSize) {
+						return ['width' => $widthSize, 'height' => -1, 'crop' => false];
+					}, $this->sizes['width'])
+				);
+				$this->previewGenerator->generatePreviews($file, $specifications);
 			} catch (NotFoundException $e) {
-                            if ($this->output->getVerbosity() > OutputInterface::VERBOSITY_VERBOSE) {
-				$error = $e->getMessage();
-				$this->output->writeln("<error>${error} " . $file->getPath() . " not found.</error>");
-                            }
+				// Maybe log that previews could not be generated?
 			} catch (\InvalidArgumentException $e) {
 				$error = $e->getMessage();
 				$this->output->writeln("<error>${error}</error>");
@@ -218,4 +224,32 @@ class PreGenerate extends Command {
 		}
 	}
 
+	private function setPID() {
+		$this->config->setAppValue($this->appName, 'pid', posix_getpid());
+	}
+
+	private function clearPID() {
+		$this->config->deleteAppValue($this->appName, 'pid');
+	}
+
+	private function getPID() {
+		return (int)$this->config->getAppValue($this->appName, 'pid', -1);
+	}
+
+	private function checkAlreadyRunning() {
+		$pid = $this->getPID();
+
+		// No PID set so just continue
+		if ($pid === -1) {
+			return false;
+		}
+
+		// Get get the gid of non running processes so continue
+		if (posix_getpgid($pid) === false) {
+			return false;
+		}
+
+		// Seems there is already a running process generating previews
+		return true;
+	}
 }
