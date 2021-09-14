@@ -35,9 +35,7 @@ DBPASSWD=$( grep password /root/.my.cnf | sed 's|password=||' )
   chmod 600 /root/.my.cnf
   sudo -i -u postgres psql <<EOF
 DROP DATABASE IF EXISTS nextcloud;
-CREATE DATABASE nextcloud
-    ENCODING utf8
-    LC_COLLATE 'en_US.UTF-8';
+CREATE DATABASE nextcloud TEMPLATE template0 ENCODING 'UNICODE';
 DROP USER IF EXISTS $DBADMIN;
 CREATE USER $DBADMIN WITH password '$DBPASSWD';
 ALTER DATABASE nextcloud OWNER TO $DBADMIN;
