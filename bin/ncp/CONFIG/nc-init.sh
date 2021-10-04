@@ -155,14 +155,11 @@ EOF
   fi
 
   # ncp-previewgenerator
-  if is_more_recent_than "21.0.0" "$NCVER"; then
-    local ncprev=/var/www/ncp-previewgenerator/ncp-previewgenerator-nc20
-  else
-    ncc app:install notify_push
-    ncc app:enable  notify_push
-    test -f /.ncp-image || start_notify_push # don't start during build
-    local ncprev=/var/www/ncp-previewgenerator/ncp-previewgenerator-nc21
-  fi
+  ncc app:install notify_push
+  ncc app:enable  notify_push
+  test -f /.ncp-image || start_notify_push # don't start during build
+  local ncprev=/var/www/ncp-previewgenerator
+  
   ln -snf "${ncprev}" /var/www/nextcloud/apps/previewgenerator
   chown -R www-data: /var/www/nextcloud/apps/previewgenerator
   ncc app:enable previewgenerator
