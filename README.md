@@ -77,6 +77,10 @@ Find the full (original) documentation at [docs.nextcloudpi.com](http://docs.nex
 
 ## How to build
 
+NextCloudPi can be installed in any architecture running Ubuntu 20.04
+_Note: this assumes a clean Ubuntu install, and there is no rollback method_
+
 ```
 # curl -sSL  https://raw.githubusercontent.com/Sebastian-47/nextcloudpi/ubuntu.20.04/install.sh | bash
 ```
+

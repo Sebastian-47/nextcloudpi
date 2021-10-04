@@ -11,6 +11,12 @@
 export NCPCFG=${NCPCFG:-/usr/local/etc/ncp.cfg}
 export CFGDIR=/usr/local/etc/ncp-config.d
 export BINDIR=/usr/local/bin/ncp
+export NCDIR=/var/www/nextcloud
+
+export TRUSTED_DOMAINS=(
+  [ip]=1 [dnsmasq]=2 [nc_domain]=3 [nextcloudpi-local]=5 [docker_overwrite]=6
+  [nextcloudpi]=7 [nextcloudpi-lan]=8 [public_ip]=11 [letsencrypt_1]=12
+  [letsencrypt_2]=13 [trusted_domain_1]=20 [trusted_domain_1]=21 [trusted_domain_1]=22)
 
 command -v jq &>/dev/null || {
   apt-get update
@@ -18,10 +24,11 @@ command -v jq &>/dev/null || {
 }
 
 [[ -f "$NCPCFG" ]] && {
-  NCVER=$(  jq -r .nextcloud_version < "$NCPCFG")
-  PHPVER=$( jq -r .php_version       < "$NCPCFG")
-  RELEASE=$(jq -r .release           < "$NCPCFG")
+  NCLATESTVER=$(jq -r .nextcloud_version < "$NCPCFG")
+  PHPVER=$(     jq -r .php_version       < "$NCPCFG")
+  RELEASE=$(    jq -r .release           < "$NCPCFG")
 }
+command -v ncc &>/dev/null && NCVER="$(ncc status | grep "version:" | awk '{ print $3 }')"
 
 function configure_app()
 {
@@ -99,6 +106,45 @@ function configure_app()
   echo "$cfg" > "$cfg_file"
   printf '\033[2J' && tput cup 0 0             # clear screen, don't clear scroll, cursor on top
   return $ret
+}
+
+function set-nc-domain()
+{
+  local domain="${1?}"
+  domain="$(sed 's|http.\?://||;s|\(/.*\)||' <<<"${domain}")"
+  if [[ "${domain}" == "" ]] || is_an_ip "${domain}"; then
+    echo "warning: No domain found. Defaulting to '$(hostname)'"
+    domain="$(hostname)"
+  fi
+  local proto
+  proto="$(ncc config:system:get overwriteprotocol)" || true
+  [[ "${proto}" == "" ]] && proto="https"
+  local url="${proto}://${domain%*/}"
+  # trusted_domain no 3 will always contain the overwrite domain
+  [[ "$2" == "--no-trusted-domain" ]] || ncc config:system:set trusted_domains 3 --value="${domain%*/}"
+  ncc config:system:set overwrite.cli.url --value="${url}/"
+  if is_ncp_activated && is_app_enabled notify_push; then
+    ncc config:system:set trusted_proxies 11 --value="127.0.0.1"
+    ncc config:system:set trusted_proxies 12 --value="::1"
+    ncc config:system:set trusted_proxies 13 --value="${domain}"
+    ncc config:system:set trusted_proxies 14 --value="$(dig +short "${domain}")"
+    sleep 5 # this seems to be required in the VM for some reason. We get `http2 error: protocol error` after ncp-upgrade-nc
+    ncc notify_push:setup "${url}/push"
+  fi
+}
+
+function start_notify_push
+{
+    pgrep notify_push &>/dev/null && return
+    if [[ -f /.docker-image ]]; then
+      local arch
+      arch="$(uname -m)"
+      [[ "${arch}" =~ "armv7" ]] && arch="armv7"
+      sudo -u www-data /var/www/nextcloud/apps/notify_push/bin/"${arch}"/notify_push --allow-self-signed /var/www/nextcloud/config/config.php &>/dev/null &
+    else
+      systemctl enable --now notify_push
+    fi
+    sleep 5 # apparently we need to make sure we wait until the database is written or something
 }
 
 function run_app()
@@ -200,7 +246,20 @@ function is_active_app()
   # function
   unset is_active
   source "$script"
-  [[ $( type -t is_active ) == function ]] && { is_active; return $?; }
+  [[ $( type -t is_active ) == function ]] && {
+    # read cfg parameters
+    [[ -f "$cfg_file" ]] && {
+      local cfg="$( cat "$cfg_file" )"
+      local len="$(jq '.params | length' <<<"$cfg")"
+      for (( i = 0 ; i < len ; i++ )); do
+        local var="$(jq -r ".params[$i].id"    <<<"$cfg")"
+        local val="$(jq -r ".params[$i].value" <<<"$cfg")"
+        eval "$var=$val"
+      done
+    }
+    is_active
+    return $?;
+  }
 
   # config
   [[ -f "$cfg_file" ]] || return 1
@@ -304,12 +363,41 @@ function is_more_recent_than()
   return 0
 }
 
+function is_app_enabled()
+{
+  local app="$1"
+   ncc app:list | sed '0,/Disabled/!d' | grep -q "${app}"
+}
+
 function check_distro()
 {
   local cfg="${1:-$NCPCFG}"
   local supported=$(jq -r .release "$cfg")
   grep -q "$supported" <(lsb_release -sc) && return 0
   return 1
+}
+
+function nc_version()
+{
+  ncc status | grep "version:" | awk '{ print $3 }'
+}
+
+function get_ip()
+{
+  local iface
+  iface="$( ip r | grep "default via" | awk '{ print $5 }' | head -1 )"
+  ip a show dev "$iface" | grep global | grep -oP '\d{1,3}(.\d{1,3}){3}' | head -1
+}
+
+function is_an_ip()
+{
+  local ip_or_domain="${1}"
+  grep -oPq '\d{1,3}(.\d{1,3}){3}' <<<"${ip_or_domain}"
+}
+
+function is_ncp_activated()
+{
+  ! a2query -s ncp-activation -q
 }
 
 function clear_password_fields()
@@ -329,7 +417,15 @@ function clear_password_fields()
 function apt_install()
 {
   apt-get update --allow-releaseinfo-change
-  apt-get install -y --no-install-recommends -o Dpkg::Options::=--force-confdef -o Dpkg::Options::="--force-confold" "$@"
+  DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends -o Dpkg::Options::=--force-confdef -o Dpkg::Options::="--force-confold" "$@"
+}
+
+function is_docker() {
+  [[ -f /.dockerenv ]] || [[ "$DOCKERBUILD" == 1 ]]
+}
+
+function is_lxc() {
+  grep -q container=lxc /proc/1/environ &>/dev/null
 }
 
 function notify_admin()

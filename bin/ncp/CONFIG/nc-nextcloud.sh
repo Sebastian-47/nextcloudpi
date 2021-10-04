@@ -19,11 +19,9 @@ install()
   # During build, this step is run before ncp.sh. Avoid executing twice
   [[ -f /usr/lib/systemd/system/nc-provisioning.service ]] && return 0
 
-  source /usr/local/etc/library.sh # sets PHPVER RELEASE
-
   # Optional packets for Nextcloud and Apps
   apt-get update
-  $APTINSTALL lbzip2 iputils-ping jq
+  $APTINSTALL lbzip2 iputils-ping jq wget
   $APTINSTALL -t $RELEASE php-smbclient exfat-fuse exfat-utils                  # for external storage
   $APTINSTALL -t $RELEASE php${PHPVER}-exif                                     # for gallery
   $APTINSTALL -t $RELEASE php${PHPVER}-gmp                                      # for bookmarks
@@ -55,6 +53,16 @@ install()
   sed -i "s|^port.*|port 0|"                                       $REDIS_CONF
   echo "maxmemory $REDIS_MEM" >> $REDIS_CONF
   echo 'vm.overcommit_memory = 1' >> /etc/sysctl.conf
+
+  if is_lxc; then
+    # Otherwise it fails to start in Buster LXC container
+    mkdir -p /etc/systemd/system/redis-server.service.d
+    cat > /etc/systemd/system/redis-server.service.d/lxc_fix.conf <<'EOF'
+[Service]
+ReadOnlyDirectories=
+EOF
+    systemctl daemon-reload
+  fi
 
   chown redis: "$REDIS_CONF"
   usermod -a -G redis www-data
@@ -186,6 +194,7 @@ EOF
   DocumentRoot /var/www/nextcloud
   <IfModule mod_rewrite.c>
     RewriteEngine On
+    RewriteRule ^.well-known/acme-challenge/ - [L]
     RewriteCond %{HTTPS} !=on
     RewriteRule ^/?(.*) https://%{SERVER_NAME}/$1 [R,L]
   </IfModule>
@@ -199,6 +208,26 @@ EOF
   </Directory>
 </VirtualHost>
 EOF
+
+  # for notify_push app in NC21
+  a2enmod proxy proxy_http proxy_wstunnel
+
+  arch="$(uname -m)"
+  [[ "${arch}" =~ "armv7" ]] && arch="armv7"
+  cat > /etc/systemd/system/notify_push.service <<EOF
+[Unit]
+Description = Push daemon for Nextcloud clients
+After = mysql.service
+
+[Service]
+Environment = PORT=7867
+ExecStart = /var/www/nextcloud/apps/notify_push/bin/"${arch}"/notify_push --allow-self-signed /var/www/nextcloud/config/config.php
+User=www-data
+
+[Install]
+WantedBy = multi-user.target
+EOF
+  [[ -f /.docker-image ]] || systemctl enable notify_push
 
   # some added security
   sed -i 's|^ServerSignature .*|ServerSignature Off|' /etc/apache2/conf-enabled/security.conf

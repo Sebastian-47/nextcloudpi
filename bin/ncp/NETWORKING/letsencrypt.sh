@@ -15,13 +15,13 @@ letsencrypt=/usr/bin/letsencrypt
 
 is_active()
 {
-  [[ $( find /etc/letsencrypt/live/ -maxdepth 0 -empty | wc -l ) == 0 ]]
+  [[ "${ACTIVE}" == "yes" ]] && [[ $( find /etc/letsencrypt/live/ -maxdepth 0 -empty | wc -l ) == 0 ]]
 }
 
 tmpl_letsencrypt_domain() {
   (
   . /usr/local/etc/library.sh
-  if is_active; then
+  if is_active_app letsencrypt; then
     find_app_param letsencrypt DOMAIN
   fi
   )
@@ -35,7 +35,7 @@ install()
   rm -f /etc/cron.d/certbot
   mkdir -p /etc/letsencrypt/live
 
-  [[ "$DOCKERBUILD" == 1 ]] && {
+  is_docker && {
     # execute before lamp stack
     cat > /etc/services-available.d/009letsencrypt <<EOF
 #!/bin/bash
@@ -50,7 +50,6 @@ EOF
   return 0
 }
 
-# tested with certbot 0.28.0
 configure()
 {
   [[ "${ACTIVE}" != "yes" ]] && {
@@ -112,21 +111,21 @@ EOF
     sed -i "s|SSLCertificateKeyFile.*|SSLCertificateKeyFile /etc/letsencrypt/live/$DOMAIN_LOWERCASE/privkey.pem|" $vhostcfg2
 
     # Configure Nextcloud
-    local domain_index=12
+    local domain_index="${TRUSTED_DOMAINS[letsencrypt_1]}"
     for dom in $DOMAIN $OTHER_DOMAIN; do
       [[ "$dom" != "" ]] && {
         ncc config:system:set trusted_domains $domain_index --value=$dom
         ((domain_index++))
       }
     done
-    ncc config:system:set overwrite.cli.url --value=https://"$DOMAIN"/
+    set-nc-domain "$DOMAIN"
 
     # delayed in bg so it does not kill the connection, and we get AJAX response
     bash -c "sleep 2 && service apache2 reload" &>/dev/null &
     rm -rf $ncdir/.well-known
 
     # Update configuration
-    [[ "$DOCKERBUILD" == 1 ]] && update-rc.d letsencrypt enable
+    is_docker && update-rc.d letsencrypt enable
 
     return 0
   }

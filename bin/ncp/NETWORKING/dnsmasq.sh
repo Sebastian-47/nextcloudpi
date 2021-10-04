@@ -48,9 +48,10 @@ configure()
     return
   }
 
-  local IFACE=$( ip r | grep "default via"   | awk '{ print $5 }' | head -1 )
-  local IP=$( sudo -u www-data php /var/www/nextcloud/occ config:system:get trusted_domains 6 | grep -oP '\d{1,3}(.\d{1,3}){3}' )
-  [[ "$IP" == "" ]] && IP=$( ip a show dev "$IFACE" | grep global | grep -oP '\d{1,3}(.\d{1,3}){3}' | head -1 )
+  local IFACE IP
+  IFACE=$( ip r | grep "default via"   | awk '{ print $5 }' | head -1 )
+  IP=$( ncc config:system:get trusted_domains "${TRUSTED_DOMAINS[docker_overwrite]}" | grep -oP '\d{1,3}(.\d{1,3}){3}' )
+  [[ "$IP" == "" ]] && IP="$(get_ip)"
 
   [[ "$IP" == "" ]] && { echo "could not detect IP"; return 1; }
 
@@ -73,9 +74,8 @@ EOF
   update-rc.d dnsmasq defaults
   update-rc.d dnsmasq enable
   service dnsmasq restart
-  cd /var/www/nextcloud
-  sudo -u www-data php occ config:system:set trusted_domains 2 --value=$DOMAIN
-  sudo -u www-data php occ config:system:set overwrite.cli.url --value=https://"$DOMAIN"/
+  ncc config:system:set trusted_domains "${TRUSTED_DOMAINS[dnsmasq]}" --value="$DOMAIN"
+  set-nc-domain "$DOMAIN" --no-trusted-domain
   echo "dnsmasq enabled"
 }
 

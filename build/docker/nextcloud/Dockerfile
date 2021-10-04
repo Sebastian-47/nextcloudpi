@@ -21,6 +21,9 @@ set -e; \
 # mark as image build
 touch /.ncp-image; \
 
+# mark as docker image
+touch /.docker-image; \
+
 # installation ( /var/www/nextcloud -> /data/app which will be in a volume )
 apt-get update; \
 apt-get install --no-install-recommends -y wget ca-certificates sudo jq; \
@@ -47,5 +50,5 @@ apt-get purge -y wget ca-certificates; \
 rm /nc-nextcloud.sh /usr/local/etc/ncp-config.d/nc-nextcloud.cfg; \
 rm /.ncp-image;
 
-COPY docker/nextcloud/020nextcloud /etc/services-enabled.d/
+COPY build/docker/nextcloud/020nextcloud /etc/services-enabled.d/
 COPY bin/ncp-provisioning.sh /usr/local/bin/
