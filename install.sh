@@ -9,7 +9,7 @@
 #
 # more details at https://ownyourbits.com
 
-BRANCH=ubuntu.20.04
+BRANCH=nc22.1.1-ubuntu.20.04
 #DBG=x
 
 set -e$DBG
@@ -27,7 +27,6 @@ export PATH="/usr/local/sbin:/usr/sbin:/sbin:${PATH}"
 # check installed software
 type mysqld  &>/dev/null && echo ">>> WARNING: existing mysqld configuration will be changed <<<"
 
-<<<<<<< HEAD
 # get install code
 echo "Getting build code..."
 
@@ -51,7 +50,7 @@ apt-get install --no-install-recommends -y git ca-certificates sudo lsb-release
 if [[ "${CODE_DIR}" == "" ]]; then
   echo "Getting build code..."
   CODE_DIR="${TMPDIR}"/nextcloudpi
-  git clone -b "${BRANCH}" https://github.com/Sebastian-47/nextcloudpi/archive/"$BRANCH"/latest.tar.gz "${CODE_DIR}"
+  git clone -b "${BRANCH}" https://github.com/Sebastian-47/nextcloudpi.git "${CODE_DIR}"
 fi
 cd "${CODE_DIR}"
 
@@ -79,7 +78,6 @@ install_app    lamp.sh
 install_app    bin/ncp/CONFIG/nc-nextcloud.sh
 run_app_unsafe bin/ncp/CONFIG/nc-nextcloud.sh
 rm /usr/local/etc/ncp-config.d/nc-nextcloud.cfg    # armbian overlay is ro
-systemctl restart mysqld # TODO this shouldn't be necessary, but somehow it's needed in Debian 9.6. Fixme
 install_app    ncp.sh
 run_app_unsafe bin/ncp/CONFIG/nc-init.sh
 bash /usr/local/bin/ncp-provisioning.sh
@@ -117,3 +115,4 @@ the warning if you have a (sub)domain available.
 # along with this script; if not, write to the
 # Free Software Foundation, Inc., 59 Temple Place, Suite 330,
 # Boston, MA  02111-1307  USA
+
