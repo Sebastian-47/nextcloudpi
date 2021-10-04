@@ -27,8 +27,7 @@ export PATH="/usr/local/sbin:/usr/sbin:/sbin:${PATH}"
 # check installed software
 type mysqld  &>/dev/null && echo ">>> WARNING: existing mysqld configuration will be changed <<<"
 
-# get install code
-echo "Getting build code..."
+# get dependencies
 apt-get update
 apt-get install --no-install-recommends -y git ca-certificates sudo lsb-release
 
@@ -38,11 +37,13 @@ wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
 echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/php.list
 apt-get update
 
-pushd "$TMPDIR"
-wget -qO- --content-disposition https://github.com/Sebastian-47/nextcloudpi/archive/"$BRANCH"/latest.tar.gz \
-  | tar -xz \
-  || exit 1
-cd - && cd "$TMPDIR"/nextcloudpi-"$BRANCH"
+# get install code
+if [[ "${CODE_DIR}" == "" ]]; then
+  echo "Getting build code..."
+  CODE_DIR="${TMPDIR}"/nextcloudpi
+  git clone -b "${BRANCH}" https://github.com/Sebastian-47/nextcloudpi/archive/"$BRANCH"/latest.tar.gz "${CODE_DIR}"
+fi
+cd "${CODE_DIR}"
 
 # install NCP
 echo -e "\nInstalling NextCloudPi..."
@@ -67,6 +68,7 @@ cp -r etc/ncp-templates /usr/local/etc/
 install_app    lamp.sh
 install_app    bin/ncp/CONFIG/nc-nextcloud.sh
 run_app_unsafe bin/ncp/CONFIG/nc-nextcloud.sh
+rm /usr/local/etc/ncp-config.d/nc-nextcloud.cfg    # armbian overlay is ro
 systemctl restart mysqld # TODO this shouldn't be necessary, but somehow it's needed in Debian 9.6. Fixme
 install_app    ncp.sh
 run_app_unsafe bin/ncp/CONFIG/nc-init.sh
@@ -76,8 +78,7 @@ rm /.ncp-image
 cd -
 rm -rf "${TMPDIR}"
 
-IFACE="$( ip r | grep "default via" | awk '{ print $5 }' | head -1 )"
-IP="$( ip a show dev "$IFACE" | grep global | grep -oP '\d{1,3}(.\d{1,3}){3}' | head -1 )"
+IP="$(get_ip)"
 
 echo "Done.
 

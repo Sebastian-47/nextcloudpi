@@ -8,7 +8,7 @@
 # More at: https://ownyourbits.com
 #
 
-
+source /usr/local/etc/library.sh
 
 configure() 
 {
@@ -86,8 +86,8 @@ EOF
     systemctl restart networking
   }
  
-  sudo -u www-data php /var/www/nextcloud/occ config:system:set trusted_domains 1 --value="$IP"
-  sudo -u www-data php /var/www/nextcloud/occ config:system:set overwrite.cli.url --value=https://"$IP"/
+  ncc config:system:set trusted_domains "${TRUSTED_DOMAINS[ip]}" --value="$IP"
+  set-nc-domain "${IP}"
   echo "Static IP set to $IP"
 }
 

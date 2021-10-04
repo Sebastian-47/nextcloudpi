@@ -11,12 +11,15 @@
 
 configure()
 {
-  [[ $ACTIVE == "no" ]] && local OPT=Off || local OPT=On
-  sed -i "s|RewriteEngine .*|RewriteEngine $OPT|" /etc/apache2/sites-available/000-default.conf
-  echo "Forcing HTTPS $OPT"
-
-  # delayed in bg so it does not kill the connection, and we get AJAX response
-  bash -c "sleep 2 && service apache2 reload" &>/dev/null &
+  [[ -f /.ncp-image ]] && return 0
+  if [[ $ACTIVE == "no" ]]; then
+    local opt=Off
+  else
+    local opt=On
+  fi
+  sed -i "s|RewriteEngine .*|RewriteEngine $opt|" /etc/apache2/sites-available/000-default.conf
+  apachectl -k graceful
+  echo "Forcing HTTPS $opt"
 }
 
 install() { :; }
