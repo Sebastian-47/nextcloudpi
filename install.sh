@@ -9,7 +9,7 @@
 #
 # more details at https://ownyourbits.com
 
-BRANCH="${BRANCH:-master}"
+BRANCH="nc21.0.5.1"
 #DBG=x
 
 set -e$DBG
@@ -33,15 +33,15 @@ apt-get install --no-install-recommends -y git ca-certificates sudo lsb-release
 
 # add an repository for php
 apt-get -y install lsb-release apt-transport-https ca-certificates
-wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
-echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/php.list
+echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/sury-php.list
+wget -qO - https://packages.sury.org/php/apt.gpg | apt-key add -
 apt-get update
 
 # get install code
 if [[ "${CODE_DIR}" == "" ]]; then
   echo "Getting build code..."
   CODE_DIR="${TMPDIR}"/nextcloudpi
-  git clone -b "${BRANCH}" https://github.com/Sebastian-47/nextcloudpi/archive/"$BRANCH"/latest.tar.gz "${CODE_DIR}"
+  git clone -b "${BRANCH}" https://github.com/Sebastian-47/nextcloudpi.git "${CODE_DIR}"
 fi
 cd "${CODE_DIR}"
 

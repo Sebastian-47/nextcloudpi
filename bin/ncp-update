@@ -12,7 +12,7 @@
   trap 'cd /; rm -rf "${TMPDIR}"' EXIT
 
   echo -e "Downloading updates"
-  git clone --depth 20 -b "$BRANCH" -q https://github.com/nextcloud/nextcloudpi.git "$TMPDIR" || {
+  git clone --depth 20 -b "$BRANCH" -q https://github.com/Sebastian-47/nextcloudpi.git "$TMPDIR" || {
     echo "No internet connectivity"
     exit 1
   }
