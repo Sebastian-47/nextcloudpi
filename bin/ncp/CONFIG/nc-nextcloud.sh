@@ -152,6 +152,7 @@ configure()
   if ! pgrep -c mysqld &>/dev/null; then
     echo "Starting mariaDB"
     mysqld &
+    local db_pid=$!
   fi
 
   # wait for mariadb
@@ -180,12 +181,9 @@ EOF
 
 ## SET APACHE VHOST
   echo "Setting up Apache..."
-  bash /usr/local/etc/ncp-templates/nextcloud.conf.sh > /etc/apache2/sites-available/nextcloud.conf || {
-    echo "ERROR: An error occured while generating the nextcloud apache2 config. Attempting safe mode..."
-    bash /usr/local/etc/ncp-templates/nextcloud.conf.sh --defaults > /etc/apache2/sites-available/nextcloud.conf || {
-      echo "ERROR: Safe mode templating failed as well. Nextcloud will not work."
+  install_template nextcloud.conf.sh /etc/apache2/sites-available/nextcloud.conf --allow-fallback || {
+      echo "ERROR: Parsing template failed. Nextcloud will not work."
       exit 1
-    }
   }
   a2ensite nextcloud
 
@@ -259,6 +257,11 @@ EOF
   crontab -u www-data /tmp/crontab_http
   rm /tmp/crontab_http
 
+  # dettach mysql during the build
+  if [[ "${db_pid}" != "" ]]; then
+    mysqladmin -u root shutdown
+    wait "${db_pid}"
+  fi
   echo "Don't forget to run nc-init"
 }
 

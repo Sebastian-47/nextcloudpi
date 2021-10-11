@@ -23,32 +23,34 @@ configure()
   }
 
   # code
-  cat > /usr/local/bin/ncp-notify-update <<EOF
+  cat > /usr/local/bin/ncp-notify-update <<'EOF'
 #!/bin/bash
 source /usr/local/etc/library.sh
 VERFILE=/usr/local/etc/ncp-version
 LATEST=/var/run/.ncp-latest-version
 NOTIFIED=/var/run/.ncp-version-notified
 
-test -e \$LATEST || exit 0;
+/usr/local/bin/ncp-check-nc-version
+
+test -e $LATEST || exit 0;
 /usr/local/bin/ncp-test-updates || { echo "NextCloudPi up to date"; exit 0; }
 
-test -e \$NOTIFIED && [[ "\$( cat \$LATEST )" == "\$( cat \$NOTIFIED )" ]] && {
-  echo "Found update from \$( cat \$VERFILE ) to \$( cat \$LATEST ). Already notified"
+test -e $NOTIFIED && [[ "$( cat $LATEST )" == "$( cat $NOTIFIED )" ]] && {
+  echo "Found update from $( cat $VERFILE ) to $( cat $LATEST ). Already notified"
   exit 0
 }
 
-echo "Found update from \$( cat \$VERFILE ) to \$( cat \$LATEST ). Sending notification..."
+echo "Found update from $( cat $VERFILE ) to $( cat $LATEST ). Sending notification..."
 
 notify_admin \
   "NextCloudPi update" \
-  "Update from \$( cat \$VERFILE ) to \$( cat \$LATEST ) is available. Update from https://\$(get_ip):4443"
+  "Update from $( cat $VERFILE ) to $( cat $LATEST ) is available. Update from https://$(get_ip):4443"
 
-cat \$LATEST > \$NOTIFIED
+cat $LATEST > $NOTIFIED
 EOF
   chmod +x /usr/local/bin/ncp-notify-update
 
-  cat > /usr/local/bin/ncp-notify-unattended-upgrade <<EOF
+  cat > /usr/local/bin/ncp-notify-unattended-upgrade <<'EOF'
 #!/bin/bash
 source /usr/local/etc/library.sh
 
@@ -56,25 +58,25 @@ LOGFILE=/var/log/unattended-upgrades/unattended-upgrades.log
 STAMPFILE=/var/run/.ncp-notify-unattended-upgrades
 VERFILE=/usr/local/etc/ncp-version
 
-test -e "\$LOGFILE" || { echo "\$LOGFILE not found"; exit 1; }
+test -e "$LOGFILE" || { echo "$LOGFILE not found"; exit 1; }
 
 # find lines with package updates
-LINE=\$( grep "INFO Packages that will be upgraded:" "\$LOGFILE" )
+LINE=$( grep "INFO Packages that will be upgraded:" "$LOGFILE" )
 
-[[ "\$LINE" == "" ]] && { echo "no new upgrades"; exit 0; }
+[[ "$LINE" == "" ]] && { echo "no new upgrades"; exit 0; }
 
 # extract package names
-PKGS=\$( sed 's|^.*Packages that will be upgraded: ||' <<< "\$LINE" | tr '\\n' ' ' )
+PKGS=$( sed 's|^.*Packages that will be upgraded: ||' <<< "$LINE" | tr '\n' ' ' )
 
 # mark lines as read
-sed -i 's|INFO Packages that will be upgraded:|INFO Packages that will be upgraded :|' \$LOGFILE
+sed -i 's|INFO Packages that will be upgraded:|INFO Packages that will be upgraded :|' \LOGFILE
 
-echo -e "Packages automatically upgraded: \$PKGS\\n"
+echo -e "Packages automatically upgraded: $PKGS\n"
 
 # notify
 notify_admin \
   "NextCloudPi Unattended Upgrades" \
-  "Packages automatically upgraded \$PKGS"
+  "Packages automatically upgraded $PKGS"
 EOF
   chmod +x /usr/local/bin/ncp-notify-unattended-upgrade
 
