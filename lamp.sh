@@ -151,6 +151,7 @@ EOF
 
   # launch mariadb if not already running
   if ! pgrep -c mysqld &>/dev/null; then
+    echo "Starting mariaDB"
     mysqld &
   fi
 
