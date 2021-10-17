@@ -17,7 +17,7 @@ is_active()
 
 install()
 {
-  apt_install btrfs-tool:arm64
+  apt_install btrfs-progs:arm64
 }
 
 configure()
